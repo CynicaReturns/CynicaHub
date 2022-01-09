@@ -24,6 +24,7 @@ if game.PlaceId == 3101667897 then
             end
         end
     end)
+    local playerHead = game.Players.LocalPlayer.Character.Head
     for i, v in pairs(game:GetService("Workspace").Hoops:GetDescendants()) do
         if v.Name == "TouchInterest" and v.Parent then
             firetouchinterest(playerHead, v.Parent, 0)
