@@ -1,0 +1,50 @@
+--// Auto Hoops SERVER HOP \\--
+if game.PlaceId == 3101667897 then
+    repeat wait() until game:IsLoaded()
+    task.wait(2)
+    if not syn then
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "CynicaHub",
+            Text = "You are not using Synapse X, this is a Synapse X Only Script",
+            Duration = 4
+        })
+        return
+    else
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "CynicaHub",
+            Text = "Auto Hoops + Server Hop executed",
+            Duration = 4
+        })
+    end
+    game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
+        if State == Enum.TeleportState.Started then
+            local queueTeleport = syn and syn.queue_on_teleport or queue_on_teleport
+            if queueTeleport then
+                queueTeleport("loadstring(game:HttpGet(''))()")
+            end
+        end
+    end)
+    for i, v in pairs(game:GetService("Workspace").Hoops:GetDescendants()) do
+        if v.Name == "TouchInterest" and v.Parent then
+            firetouchinterest(playerHead, v.Parent, 0)
+        end
+    end
+    task.wait(3)
+    spawn(function()
+        local x = {}
+        for _, v in ipairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")).data) do
+            if type(v) == "table" and v.maxPlayers > v.playing and v.id ~= game.JobId then
+                x[#x + 1] = v.id
+            end
+        end
+        if #x > 0 then
+            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, x[math.random(1, #x)])
+        else
+            return game.StarterGui:SetCore("SendNotification", {
+                Title = "CynicaHub",
+                Text = "Couldn't find a Server",
+                Duration = 4
+            })
+        end
+    end)
+end
