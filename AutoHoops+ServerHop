@@ -1,7 +1,7 @@
 --// Auto Hoops SERVER HOP \\--
 if game.PlaceId == 3101667897 then
     repeat wait() until game:IsLoaded()
-    task.wait(2)
+    wait(3)
     if not syn then
         game.StarterGui:SetCore("SendNotification", {
             Title = "CynicaHub",
@@ -25,12 +25,14 @@ if game.PlaceId == 3101667897 then
         end
     end)
     local playerHead = game.Players.LocalPlayer.Character.Head
-    for i, v in pairs(game:GetService("Workspace").Hoops:GetDescendants()) do
-        if v.Name == "TouchInterest" and v.Parent then
-            firetouchinterest(playerHead, v.Parent, 0)
+    spawn(function()
+        for i, v in pairs(game:GetService("Workspace").Hoops:GetDescendants()) do
+            if v.Name == "TouchInterest" and v.Parent then
+                firetouchinterest(playerHead, v.Parent, 0)
+            end
         end
-    end
-    task.wait(3)
+    end)
+    wait(6)
     spawn(function()
         local x = {}
         for _, v in ipairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")).data) do
