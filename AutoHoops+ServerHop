@@ -20,7 +20,7 @@ if game.PlaceId == 3101667897 then
         if State == Enum.TeleportState.Started then
             local queueTeleport = syn and syn.queue_on_teleport or queue_on_teleport
             if queueTeleport then
-                queueTeleport("loadstring(game:HttpGet(''))()")
+                queueTeleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/cynicamanee/CynicaHub/main/AutoHoops%2BServerHop'))()")
             end
         end
     end)
