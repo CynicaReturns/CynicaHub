@@ -1,0 +1,2137 @@
+-- Script GUID: {053DC641-2A02-4DBE-80A9-AB69CFAF8042}
+--[[VARIABLE DEFINITION ANOMALY DETECTED, DECOMPILATION OUTPUT POTENTIALLY INCORRECT]]--
+--[[VARIABLE DEFINITION ANOMALY DETECTED, DECOMPILATION OUTPUT POTENTIALLY INCORRECT]]--
+--[[VARIABLE DEFINITION ANOMALY DETECTED, DECOMPILATION OUTPUT POTENTIALLY INCORRECT]]--
+-- Decompiled with the Synapse X Luau decompiler.
+
+local l__UserInputService__1 = game:GetService("UserInputService");
+inrbxmenu = false;
+game:GetService("GuiService").MenuOpened:connect(function()
+	inrbxmenu = true;
+end);
+game:GetService("GuiService").MenuClosed:connect(function()
+	inrbxmenu = false;
+end);
+for v2, v3 in pairs(game.Workspace.Barriers:GetChildren()) do
+	if v3:IsA("BasePart") then
+		v3.Transparency = 1;
+	end;
+end;
+for v4, v5 in pairs(game.Workspace.Events:GetChildren()) do
+	if v5:IsA("BasePart") then
+		v5.Transparency = 1;
+	end;
+end;
+TreeSteep = 44;
+MinWidth = 16;
+MaxWidth = 32;
+Intensity = 4;
+Speed = 2;
+renderrange = 100;
+local v6, v7, v8 = pairs(script.Trees.Value:GetChildren());
+while true do
+	local v9, v10 = v6(v7, v8);
+	if not v9 then
+		break;
+	end;
+	for v11, v12 in pairs(v10:GetChildren()) do
+		if v12.Name ~= "Trunk" then
+			game.Debris:AddItem(v12, 0);
+		end;
+	end;
+	local v13 = { v10.Trunk };
+	rng = math.random(2, 5);
+	for v14 = 1, rng do
+		r = v10.BigBranch:Clone();
+		r.Parent = v10;
+		cf = CFrame.new(v10.Trunk.PointOfBranches.WorldPosition) * CFrame.fromOrientation(0, math.rad(360 / rng) * v14, 0);
+		cf = cf * CFrame.fromOrientation(-math.rad(math.random(TreeSteep / 4, TreeSteep)), 0, 0);
+		cf = cf * CFrame.fromOrientation(0, math.rad(math.random(-180, 180)), 0);
+		r.CFrame = cf;
+		tcf = v10.Trunk.CFrame * v10.Trunk.PointOfBranches.CFrame;
+		bcf = r.CFrame * r.PointOfCenter.CFrame;
+		ocf = tcf:ToObjectSpace(bcf);
+		cf = cf - v10.Trunk.CFrame.rightVector * ocf.Position.X + v10.Trunk.CFrame.lookVector * ocf.Position.Z - v10.Trunk.CFrame.upVector * ocf.Position.Y;
+		r.CFrame = cf;
+		table.insert(v13, r);
+		if v10:FindFirstChild("Leaves") then
+			local v15 = v10.Leaves:Clone();
+			v15.Size = Vector3.new(math.random(MinWidth, MaxWidth), math.random(MinWidth, MaxWidth), math.random(MinWidth, MaxWidth));
+			v15.CFrame = CFrame.new(r.PointOfLeaves.WorldPosition) * CFrame.fromOrientation(math.rad(math.random(-180, 180)), math.rad(math.random(-180, 180)), math.rad(math.random(-180, 180)));
+			v15.Parent = v10;
+			table.insert(v13, v15);
+		end;
+	end;
+	local v16 = {};
+	for v17, v18 in pairs(v13) do
+		if v18:IsA("BasePart") then
+			table.insert(v16, { v18, v10.PrimaryPart.CFrame:ToObjectSpace(v18.CFrame) });
+		end;
+	end;
+	local u1 = Instance.new("CFrameValue");
+	local l__CFrame__2 = v10.PrimaryPart.CFrame;
+	spawn(function()
+		u1.Value = v10.PrimaryPart.CFrame;
+		u1:GetPropertyChangedSignal("Value"):Connect(function()
+			for v19, v20 in pairs(v16) do
+				v20[1].CFrame = u1.Value * v20[2];
+			end;
+		end);
+		local v21 = math.random(1, 10000);
+		while true do
+			pcall(function()
+				if (c.CFrame.Position - v10.PrimaryPart.CFrame.Position).magnitude < renderrange then
+					game:GetService("TweenService"):Create(u1, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+						Value = l__CFrame__2 * CFrame.fromOrientation(math.rad(math.sin(tick() + v21 * Speed) * Intensity), 0, math.rad(math.cos(tick() + v21 * Speed) * Intensity / 5))
+					}):Play();
+				end;
+			end);
+			wait(1);		
+		end;
+	end);
+end;
+lighting = game.Lighting;
+lighting.Ambient = Color3.fromRGB(63, 63, 63);
+lighting.ColorShift_Bottom = Color3.fromRGB(0, 0, 0);
+lighting.ColorShift_Top = Color3.fromRGB(0, 0, 0);
+lighting.Brightness = 1;
+lighting.OutdoorAmbient = Color3.fromRGB(102, 102, 102);
+lighting.EnvironmentDiffuseScale = 0;
+lighting.EnvironmentSpecularScale = 0;
+lighting.FogColor = Color3.fromRGB(52, 52, 52);
+lighting.FogEnd = 300;
+lighting.ExposureCompensation = 0;
+lighting.ClockTime = 7;
+lighting.ShadowSoftness = 0;
+lighting.Bloom.Enabled = true;
+lighting.ColorCorrection.Enabled = true;
+if l__UserInputService__1.TouchEnabled then
+	lighting.Brightness = 2.5;
+end;
+checkpoint = 1;
+skipheliCutscene = false;
+local v22 = game:GetService("TeleportService"):GetLocalPlayerTeleportData();
+part = 1;
+function setGameData(p1)
+	if p1 ~= 1 then
+		skipheliCutscene = true;
+	end;
+	if p1 == 2 then
+		checkpoint = 3;
+		game.ReplicatedStorage.FakeElevator.Parent = game.Workspace;
+	end;
+	if p1 == 3 then
+		checkpoint = 4;
+		game.Workspace.Events.MapHitbox_02:Destroy();
+	end;
+end;
+if v22 then
+	setGameData(v22.Part);
+end;
+DeveloperMode = false;
+SimulatingGameplay = false;
+DeveloperSpawnCFrame = { CFrame.new(-1502.622, 37.415, -1248.515), 0 };
+if DeveloperMode then
+	skipheliCutscene = true;
+	setGameData(1);
+	checkpoint = 1;
+elseif SimulatingGameplay then
+	setGameData(1);
+end;
+local v23 = { { CFrame.new(-44.487, 11.639, 26.352), -10 }, { CFrame.new(script.Elevator.Value.CFrame.Position + script.Elevator.Value.CFrame.UpVector * 3), 240 }, { CFrame.new(-218.761, -75.3, -869.62), -105 }, { CFrame.new(-110.88, -24.652, -769.103), 143 }, { CFrame.new(-123.547, 12.825, -585.291), 120 }, { CFrame.new(-148.894, -112.18, -535.191), 125 }, { CFrame.new(-958.354, 75.147, -535.063), 80 }, { CFrame.new(-1480.943, 39.31, -1100.398), 40 }, { CFrame.new(-1760, 88.047, -1243.2), 0 } };
+kf = Instance.new("Folder", game.Players.LocalPlayer.PlayerGui);
+c = game.Workspace.Camera;
+cpo = Instance.new("CFrameValue");
+InJournal = false;
+flashlight = false;
+cpo.Value = CFrame.new(-24.01, 87.204, 124.625) * CFrame.fromOrientation(math.rad(-15), math.rad(-45), 0);
+sprinting = Instance.new("NumberValue");
+sprinting.Value = 1;
+X = 0;
+Y = 0;
+isrunnin = false;
+bobble = Instance.new("Vector3Value");
+ingamemenu = false;
+menublur = Instance.new("BlurEffect", c);
+menucolour = Instance.new("ColorCorrectionEffect", c);
+menublur.Size = 0;
+fieldtween = Instance.new("NumberValue");
+fieldtween.Value = 70;
+local v24 = Instance.new("BodyGyro");
+local v25 = Instance.new("NumberValue");
+v24.MaxTorque = Vector3.new(0, 9000000000, 0);
+DefaultAnimations = {};
+td = tick();
+cdrop = Instance.new("NumberValue");
+local v26 = game.ReplicatedStorage.UI.HoverBillBoard:Clone();
+local v27 = tick();
+AnimationCutScene = false;
+dialogbox = nil;
+Journal = game.ReplicatedStorage.UI.Journal:Clone();
+if not l__UserInputService__1.TouchEnabled then
+	dialogbox = game.ReplicatedStorage.UI.DialogBox:Clone();
+else
+	dialogbox = game.ReplicatedStorage.UI["DialogBox(Mobile)"]:Clone();
+end;
+dialogbox.Parent = kf;
+BookTable = {};
+ObjectiveTable = { "Part 1 | The Lab" };
+Mode = "Objectives";
+function OpenCloseJournal()
+	if JournalEnabled then
+		InJournal = not InJournal;
+		Journal.Center.Visible = InJournal;
+		Journal.Book.Visible = false;
+	end;
+	PreviousCountOfObjectives = #ObjectiveTable;
+	UpdateJournal();
+end;
+function UpdateJournal()
+	local v28, v29, v30 = pairs(Journal.Center.Box.ScrollingFrame:GetChildren());
+	while true do
+		local v31, v32 = v28(v29, v30);
+		if v31 then
+
+		else
+			break;
+		end;
+		v30 = v31;
+		if not v32:IsA("UIGridLayout") then
+			v32:Destroy();
+		end;	
+	end;
+	if Mode == "Objectives" then
+		local v33, v34, v35 = pairs(ObjectiveTable);
+		while true do
+			local v36, v37 = v33(v34, v35);
+			if v36 then
+
+			else
+				break;
+			end;
+			v35 = v36;
+			local v38 = game.ReplicatedStorage.UI.ObjectiveBar:Clone();
+			v38.Parent = Journal.Center.Box.ScrollingFrame;
+			v38.TextLabel.Text = v37;
+			v38.LayoutOrder = #ObjectiveTable - v36;		
+		end;
+		return;
+	end;
+	if Mode == "Book" then
+		local v39, v40, v41 = pairs(BookTable);
+		while true do
+			local v42, v43 = v39(v40, v41);
+			if v42 then
+
+			else
+				break;
+			end;
+			v41 = v42;
+			local v44 = game.ReplicatedStorage.UI.BookBar:Clone();
+			v44.Parent = Journal.Center.Box.ScrollingFrame;
+			v44.TextLabel.Text = v43;
+			v44.Open.MouseButton1Click:connect(function()
+				OpenBook(v43);
+			end);		
+		end;
+	end;
+end;
+local u3 = require(game.ReplicatedStorage.Modules.BookInfo);
+function OpenBook(p2)
+	Journal.Book.Visible = true;
+	Journal.Center.Visible = false;
+	Journal.Book.Book.Heading.Text = "[" .. p2 .. "]";
+	if u3[p2] then
+
+	else
+		Journal.Book.Book.Line1.Text = "";
+		Journal.Book.Book.Line2.Text = "";
+		Journal.Book.Book.Line3.Text = "";
+		Journal.Book.Book.Line4.Text = "";
+		Journal.Book.Book.Line5.Text = "";
+		Journal.Book.Book.Line6.Text = "";
+		return;
+	end;
+	Journal.Book.Book.Line1.Text = u3[p2][1];
+	Journal.Book.Book.Line2.Text = u3[p2][2];
+	Journal.Book.Book.Line3.Text = u3[p2][3];
+	Journal.Book.Book.Line4.Text = u3[p2][4];
+	Journal.Book.Book.Line5.Text = u3[p2][5];
+	Journal.Book.Book.Line6.Text = u3[p2][6];
+end;
+Journal.Button.ImageButton.MouseButton1Click:Connect(function()
+	OpenCloseJournal();
+end);
+Journal.Center.Close.MouseButton1Click:connect(function()
+	OpenCloseJournal();
+end);
+Journal.Book.Book.Close.MouseButton1Click:connect(function()
+	Journal.Book.Visible = false;
+	Journal.Center.Visible = true;
+end);
+Journal.Center.Info.MouseButton1Click:connect(function()
+	Mode = "Book";
+	UpdateJournal();
+end);
+Journal.Center.Objectives.MouseButton1Click:connect(function()
+	Mode = "Objectives";
+	UpdateJournal();
+end);
+PreviousCountOfObjectives = 0;
+function AddToObjectives(p3)
+	local v45 = true;
+	local v46, v47, v48 = pairs(ObjectiveTable);
+	while true do
+		local v49, v50 = v46(v47, v48);
+		if v49 then
+
+		else
+			break;
+		end;
+		v48 = v49;
+		if v50 == p3 then
+			v45 = false;
+			break;
+		end;	
+	end;
+	if v45 then
+		table.insert(ObjectiveTable, p3);
+		Sound("HoverSound", true);
+		Journal.Button.Position = UDim2.new(0.01, 0, 0.46, 0);
+		tweens(Journal.Button, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+			Position = UDim2.new(0.01, 0, 0.5, 0)
+		});
+		UpdateJournal();
+	end;
+end;
+if not l__UserInputService__1.TouchEnabled then
+	local v51 = game.ReplicatedStorage.UI.Description:Clone();
+else
+	v51 = game.ReplicatedStorage.UI["Description(Mobile)"]:Clone();
+	local v52 = game.ReplicatedStorage.UI.MobileButtons:Clone();
+	v52.Parent = kf;
+	Instance.new("ColorCorrectionEffect", game.Lighting).Brightness = 0.3;
+	local u4 = false;
+	v52:FindFirstChildWhichIsA("Frame").Crouch.TextButton.MouseButton1Click:connect(function()
+		if not ingamemenu and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid") then
+			u4 = not u4;
+			if u4 then
+				v52:FindFirstChildWhichIsA("Frame").Crouch.ImageColor3 = Color3.fromRGB(255, 255, 255);
+				return;
+			end;
+			v52:FindFirstChildWhichIsA("Frame").Crouch.ImageColor3 = Color3.fromRGB(0, 0, 0);
+		end;
+	end);
+	v52:FindFirstChildWhichIsA("Frame").Flashlight.TextButton.MouseButton1Click:connect(function()
+		flashlight = not flashlight;
+		if flashlight then
+			v52:FindFirstChildWhichIsA("Frame").Flashlight.ImageColor3 = Color3.fromRGB(255, 255, 255);
+			game.ReplicatedStorage.Events.ServerInput:FireServer("InputSound\194\16718\226\151\1397\226\151\15294\226\151\1529\226\128\162", { "FlashlightOn" });
+			return;
+		end;
+		v52:FindFirstChildWhichIsA("Frame").Flashlight.ImageColor3 = Color3.fromRGB(0, 0, 0);
+		game.ReplicatedStorage.Events.ServerInput:FireServer("InputSound\194\16718\226\151\1397\226\151\15294\226\151\1529\226\128\162", { "FlashlightOff" });
+	end);
+	v52:FindFirstChildWhichIsA("Frame").Sprint.TextButton.MouseButton1Click:connect(function()
+		if not ingamemenu and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid") then
+			isrunnin = not isrunnin;
+			if isrunnin then
+				v52:FindFirstChildWhichIsA("Frame").Sprint.ImageColor3 = Color3.fromRGB(255, 255, 255);
+				return;
+			end;
+			v52:FindFirstChildWhichIsA("Frame").Sprint.ImageColor3 = Color3.fromRGB(0, 0, 0);
+		end;
+	end);
+end;
+v51.Parent = kf;
+SoundLevel = 0;
+local v53 = game.ReplicatedStorage.Details.Deathscreen:Clone();
+local v54 = Instance.new("BlurEffect");
+v54.Size = 40;
+sb = game.ReplicatedStorage.Details.Thunderstorm:Clone();
+sb.Parent = game.Lighting;
+game.ReplicatedStorage.Events.ServerInput:FireServer("spawn\226\128\1628\226\152\18687Y\226\152\18687894897\226\151\152\226\128\16281");
+game.Players.LocalPlayer.Chatted:connect(function(p4)
+	game.ReplicatedStorage.Events.ServerInput:FireServer("sendmessagetofilterN9189\226\153\1668\226\151\1394189\226\128\1628", p4);
+end);
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+	while true do
+		wait();
+		if game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid") then
+			break;
+		end;	
+	end;
+	game.ReplicatedStorage.Details.SurroundingLight:Clone().Parent = game.Players.LocalPlayer.Character.PrimaryPart;
+	if l__UserInputService__1.TouchEnabled then
+		plr.PlayerGui:WaitForChild("TouchGui").DisplayOrder = 2;
+	end;
+	local v55 = v23[checkpoint];
+	if DeveloperMode then
+		v55 = DeveloperSpawnCFrame;
+	end;
+	game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(v55[1]);
+	X = v55[2];
+	Y = 0;
+	game.Players.LocalPlayer.Character.PrimaryPart.Anchored = true;
+	spawn(function()
+		wait(2);
+		game.Players.LocalPlayer.Character.PrimaryPart.Anchored = false;
+	end);
+	local v56 = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid");
+	DefaultAnimations = { v56:LoadAnimation(script.Defaults.Idle), v56:LoadAnimation(script.Defaults.Run), v56:LoadAnimation(script.Defaults.Falling), v56:LoadAnimation(script.Defaults.CrouchIdle), v56:LoadAnimation(script.Defaults.CrouchRun), v56:LoadAnimation(script.Defaults.Sit), v56:LoadAnimation(script.Defaults.Helicopter) };
+	v56.Changed:connect(function(p5)
+		if p5 and p5 == "Jump" and v56.Jump then
+			if u4 or tick() < td then
+				v56.Jump = false;
+				return;
+			end;
+			if not u4 then
+				td = tick() + 1;
+			end;
+		end;
+	end);
+	v56.Died:connect(function()
+		AnimationCutScene = false;
+		u4 = false;
+		isrunnin = false;
+	end);
+end);
+function tweens(p6, p7, p8)
+	game:GetService("TweenService"):Create(p6, p7, p8):Play();
+end;
+function DescriptionChange(p9, p10, p11)
+	tweens(v51.Body.Dialog, TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+		TextTransparency = 0, 
+		TextStrokeTransparency = 0
+	});
+	v51.Body.Dialog.Text = "";
+	v51.Body.Dialog.TextColor3 = p10;
+	local v57 = "";
+	local v58 = string.len(p9);
+	local v59 = 1 - 1;
+	while true do
+		v51.Body.Dialog.Text = v57 .. string.sub(p9, v59, v59);
+		local v60 = 1 - 1;
+		while true do
+			game:GetService("RunService").Heartbeat:wait();
+			if 0 <= 1 then
+				if v60 < 4 then
+
+				else
+					break;
+				end;
+			elseif 4 < v60 then
+
+			else
+				break;
+			end;
+			v60 = v60 + 1;		
+		end;
+		if string.sub(p9, v59, v59) ~= "," then
+			if string.sub(p9, v59, v59) == "." then
+				wait(0.25);
+			end;
+		else
+			wait(0.25);
+		end;
+		if 0 <= 1 then
+			if v59 < v58 then
+
+			else
+				break;
+			end;
+		elseif v58 < v59 then
+
+		else
+			break;
+		end;
+		v59 = v59 + 1;	
+	end;
+	wait(p11);
+end;
+function HideDescription()
+	tweens(v51.Body.Dialog, TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+		TextTransparency = 1, 
+		TextStrokeTransparency = 1
+	});
+	wait(1);
+	v51.Body.Dialog.Text = "";
+end;
+DescriptionChange("", Color3.fromRGB(255, 255, 255), 0);
+function Sound(p12, p13)
+	if game.ReplicatedStorage.Sounds:FindFirstChild(p12) then
+
+	else
+		return nil;
+	end;
+	local v61 = game.ReplicatedStorage.Sounds[p12]:Clone();
+	v61.Parent = kf;
+	v61:Play();
+	if p13 then
+		game.Debris:AddItem(v61, v61.TimeLength + 2);
+	end;
+	return v61;
+end;
+outdoorambience = Sound("OutDoorAmbience", false);
+incaveambience = Sound("IncaveAmbience", false);
+labAmbience = Sound("LabAmbience", false);
+MonsterAmbience = Sound("MonsterAmbience", false);
+deeplabambience = Sound("DeeplabAmbience", false);
+deeplabambience:Play();
+awareness = Sound("Giygas", false);
+awareness:Play();
+thermoplantambience = Sound("ThermoPlantAmbience", false);
+thermoplantambience:Play();
+clockworkambience = Sound("ClockworkAmbience", false);
+clockworkambience:Play();
+TransportAmbience = Sound("TransportAmbience", false);
+TransportAmbience:Play();
+LeightAmbience = Sound("LeightAmbience", false);
+LeightAmbience:Play();
+TwistedGirlAmbience = Sound("TwistedGirlAmbience", false);
+TwistedGirlAmbience:Play();
+VHSAmbience = Sound("VHSAmbience", false);
+VHSAmbience:Play();
+function CreateJumpscareGUI(p14)
+	local v62 = game.ReplicatedStorage.UI[p14]:Clone();
+	v62.Parent = game.ReplicatedStorage;
+	local v63 = Instance.new("Camera", v62);
+	v63.CFrame = CFrame.new(0, 0, 0);
+	v62:FindFirstChildWhichIsA("ViewportFrame").CurrentCamera = v63;
+	return { v62, v63 };
+end;
+function CreateMonster(p15, p16)
+	local v64 = game.ReplicatedStorage.JumpscareModels[p15]:Clone();
+	v64.Parent = p16:FindFirstChildWhichIsA("ViewportFrame").WorldModel;
+	return { v64, (v64:FindFirstChildWhichIsA("Humanoid"):LoadAnimation(v64.JumpscareAnimation)) };
+end;
+local v65 = CreateJumpscareGUI("JumpscareUI");
+local v66 = CreateJumpscareGUI("JumpscareUI2");
+local v67 = CreateJumpscareGUI("JumpscareUI3");
+local v68 = CreateJumpscareGUI("JumpscareUI4");
+JumpscareCompression = {
+	Monster1 = { v65, CreateMonster("MonsterModel", v65[1]) }, 
+	Monster2 = { v66, CreateMonster("Monster2Model", v66[1]) }, 
+	Monster3 = { v67, CreateMonster("DollmakerModel", v67[1]) }, 
+	Monster4 = { v68, CreateMonster("LeightModel", v68[1]) }
+};
+function Jumpscare(p17, p18)
+	local v69 = JumpscareCompression[p17];
+	v69[1][1].Parent = kf;
+	v69[1][2].CFrame = v69[2][1].PrimaryPart.CFrame + v69[2][1].PrimaryPart.CFrame.lookVector * 5 + v69[2][1].PrimaryPart.CFrame.upVector * 5;
+	v69[1][2].CFrame = v69[1][2].CFrame * CFrame.fromOrientation(0, math.rad(180), 0);
+	tweens(v69[1][2], TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+		CFrame = (v69[2][1].PrimaryPart.CFrame + v69[2][1].PrimaryPart.CFrame.lookVector * p18.X + v69[2][1].PrimaryPart.CFrame.upVector * p18.Y) * CFrame.fromOrientation(0, math.rad(180), 0)
+	});
+	v69[2][2]:Play();
+	wait(v69[2][2].Length - 0.05);
+	v69[1][1].Parent = game.ReplicatedStorage;
+end;
+game.ReplicatedStorage.Events.ServerInput.OnClientEvent:Connect(function(p19, p20)
+	if p19 == "DoorJumpscare" then
+		local v70 = game.ReplicatedStorage.Details.Monster2SideScare:Clone();
+		v70.PrimaryPart.CFrame = CFrame.new(9.654, -74.3, -855.936) * CFrame.fromOrientation(0, math.rad(35), 0);
+		v70.Parent = game.ReplicatedStorage;
+		v70.Humanoid:LoadAnimation(v70.WalkCycle):Play();
+		tweens(v70.PrimaryPart, TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+			CFrame = CFrame.new(51.431, -74.3, -885.189) * CFrame.fromOrientation(0, math.rad(35), 0)
+		});
+		v70.Parent = game.Workspace;
+		game.Debris:AddItem(v70, 0.5);
+		local v71 = Sound("SCR", true);
+		v71.Parent = v70.PrimaryPart;
+		tweens(v71, TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+			Volume = 0
+		});
+		return;
+	end;
+	if p19 == "ErrorUHOH" then
+		spawn(function()
+			error("pcall error; something has attempted to breach");
+		end);
+		spawn(function()
+			error("failed to instance.new('Cake')");
+		end);
+		warn("Please turn off the server as to prevent further errors!");
+		wait(math.random(5.5, 7.8));
+		spawn(function()
+			while true do
+				wait();
+				spawn(function()
+					rng = math.random(1, 5);
+					if rng == 1 then
+						error("failed to instance.new('Cake')");
+						return;
+					end;
+					if rng == 2 then
+						error("failed to instance.new('BloxyCola')");
+						return;
+					end;
+					if rng == 3 then
+						error("failed to instance.new('Starblox')");
+						return;
+					end;
+					if rng == 4 then
+						error("failed to instance.new('OBCGum')");
+						return;
+					end;
+					if rng == 5 then
+						error("failed to instance.new('Hamburger')");
+					end;
+				end);			
+			end;
+		end);
+		wait(7);
+		game.Players.LocalPlayer:Kick("Dev Note: What did you do?");
+		return;
+	end;
+	if p19 == "VHSCurse" then
+		local v72 = game.ReplicatedStorage.Details.VHSInvisibleWall:Clone();
+		v72.Parent = game.Workspace;
+		game.Debris:AddItem(v72, 30);
+		wait(10);
+		local v73 = Instance.new("ColorCorrectionEffect", game.Lighting);
+		v73.Brightness = -100;
+		game.Debris:AddItem(v73, 4);
+		return;
+	end;
+	if p19 == "RecieveMessage" then
+		if p20[1] then
+			local v74 = game.ReplicatedStorage.UI.ChatInput:Clone();
+			v74.Text = "[" .. p20[4] .. "] " .. p20[1].Name .. ") " .. p20[2];
+			if p20[1] == game.Players.LocalPlayer then
+				v74.Text = "[" .. p20[4] .. "] You) " .. p20[2];
+			end;
+			v74.TextColor3 = p20[3];
+			game.Debris:AddItem(v74, 60);
+			spawn(function()
+				wait(15);
+				tweens(v74, TweenInfo.new(45, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+					TextTransparency = 1
+				});
+			end);
+			v74.Parent = dialogbox.Frame.ScrollingFrame;
+			for v75, v76 in pairs(dialogbox.Frame.ScrollingFrame:GetChildren()) do
+				if v76:IsA("TextLabel") then
+					v76.LayoutOrder = v76.LayoutOrder + 1;
+					if v76.LayoutOrder > 16 then
+						v76:Destroy();
+					end;
+				end;
+			end;
+			return;
+		else
+			local v77 = game.ReplicatedStorage.UI.ChatInput:Clone();
+			v77.Text = p20[2];
+			if p20[1] == game.Players.LocalPlayer then
+				v77.Text = p20[2];
+			end;
+			v77.TextColor3 = p20[3];
+			game.Debris:AddItem(v77, 60);
+			spawn(function()
+				wait(15);
+				tweens(v77, TweenInfo.new(45, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+					TextTransparency = 1
+				});
+			end);
+			v77.Parent = dialogbox.Frame.ScrollingFrame;
+			for v78, v79 in pairs(dialogbox.Frame.ScrollingFrame:GetChildren()) do
+				if v79:IsA("TextLabel") then
+					v79.LayoutOrder = v79.LayoutOrder + 1;
+					if v79.LayoutOrder > 16 then
+						v79:Destroy();
+					end;
+				end;
+			end;
+			return;
+		end;
+	end;
+	if p19 == "Footsteps" then
+		if p20[2].Character and p20[2].Character:FindFirstChild("Head") then
+			for v80, v81 in pairs({ { "Snow", game.ReplicatedStorage.Sounds.Snow_footsound, 2 }, { "Concrete", game.ReplicatedStorage.Sounds.Concrete_Footsound, 2 }, { "Metal", game.ReplicatedStorage.Sounds.Metal_Footsound, 2 }, { "Mud", game.ReplicatedStorage.Sounds.Mud_Footsound, 2 }, { "Wood", game.ReplicatedStorage.Sounds.Wood_Footsound, 2 } }) do
+				if v81[1] == p20[1] then
+					local v82 = v81[2]:Clone();
+					v82.Parent = p20[2].Character.Head;
+					v82.Name = "ServerSound";
+					v82.PlaybackSpeed = math.random(950, 1100) / 1000;
+					v82:Play();
+					game.Debris:AddItem(v82, v81[3]);
+				end;
+			end;
+			return;
+		end;
+	else
+		if p19 == "Sound" then
+			for v83, v84 in pairs({ { "FlashlightOn", game.ReplicatedStorage.Sounds.FlashlightOn, 2 }, { "FlashlightOff", game.ReplicatedStorage.Sounds.FlashlightOff, 2 } }) do
+				if v84[1] == p20[1] then
+					local v85 = v84[2]:Clone();
+					v85.Parent = p20[2].Character.Head;
+					v85.Name = "ServerSound";
+					v85.PlaybackSpeed = math.random(950, 1100) / 1000;
+					v85:Play();
+					game.Debris:AddItem(v85, v84[3]);
+				end;
+			end;
+			return;
+		end;
+		if p19 == "Flashlight" then
+			if p20[1].Character and (p20[1].Character:FindFirstChild("Head") and p20[1] ~= game.Players.LocalPlayer) and p20[1].Character:FindFirstChild("Right Arm") then
+				if not p20[3] then
+					if p20[2] then
+						if not p20[1].Character.Head:FindFirstChild("FlashlightAttachment") then
+							local v86 = Instance.new("Attachment", p20[1].Character.Head);
+							v86.Name = "FlashlightAttachment";
+							v86.Position = Vector3.new(0, 0, 4.5);
+							game.ReplicatedStorage.Details.Flashlight:Clone().Parent = v86;
+							return;
+						end;
+					elseif p20[1].Character.Head:FindFirstChild("FlashlightAttachment") then
+						p20[1].Character.Head:FindFirstChild("FlashlightAttachment"):Destroy();
+						return;
+					end;
+				elseif p20[2] then
+					if not p20[1].Character["Right Arm"]:FindFirstChild("FlashlightAttachment") then
+						local v87 = Instance.new("Attachment", p20[1].Character["Right Arm"]);
+						v87.Name = "FlashlightAttachment";
+						v87.Position = Vector3.new(0, -1, 0);
+						v87.Orientation = Vector3.new(-90, 0, 0);
+						game.ReplicatedStorage.Details.Flashlight:Clone().Parent = v87;
+						return;
+					end;
+				elseif p20[1].Character["Right Arm"]:FindFirstChild("FlashlightAttachment") then
+					p20[1].Character["Right Arm"]:FindFirstChild("FlashlightAttachment"):Destroy();
+					return;
+				end;
+			end;
+		else
+			if p19 == "AddToObjectives" then
+				AddToObjectives(p20);
+				return;
+			end;
+			if p19 == "ChangeMessage" then
+				if v51.Body.Dialog.Text == "" then
+					DescriptionChange(p20[1], p20[2], p20[3]);
+					HideDescription();
+					return;
+				end;
+			elseif p19 == "Letter" then
+				local v88 = true;
+				for v89, v90 in pairs(BookTable) do
+					if v90 == p20 then
+						v88 = false;
+						break;
+					end;
+				end;
+				if v88 then
+					table.insert(BookTable, p20);
+					Sound("BookCollected", true);
+					UpdateJournal();
+					return;
+				end;
+			else
+				if p19 == "Monster" then
+					if p20[1] > 30 then
+						tweens(MonsterAmbience, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Volume = 0
+						});
+						return;
+					else
+						tweens(MonsterAmbience, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Volume = math.clamp(30 / p20[1] - 1, 0, 1) * 1.5
+						});
+						return;
+					end;
+				end;
+				if p19 == "Jumpscare4" then
+					local v91 = Sound("LeightJumpscare", true);
+					v91.TimePosition = 0;
+					spawn(function()
+						wait(1);
+						tweens(v91, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Volume = 0
+						});
+					end);
+					Jumpscare("Monster4", Vector3.new(6, 6, 0));
+					return;
+				end;
+				if p19 == "Jumpscare3" then
+					local v92 = Sound("DollJumpscare", true);
+					v92.TimePosition = 0;
+					spawn(function()
+						wait(1);
+						tweens(v92, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Volume = 0
+						});
+					end);
+					Jumpscare("Monster3", Vector3.new(3.5, 1.5, 0));
+					return;
+				end;
+				if p19 == "Jumpscare2" then
+					local v93 = Sound("SCR", true);
+					v93:Play();
+					spawn(function()
+						wait(0.7);
+						tweens(v93, TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Volume = 0
+						});
+					end);
+					Jumpscare("Monster2", Vector3.new(5, 8, 0));
+					return;
+				end;
+				if p19 == "Jumpscare" then
+					local v94 = Sound("JumpscareSound", true);
+					v94.TimePosition = 0.35;
+					spawn(function()
+						wait(1);
+						tweens(v94, TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Volume = 0
+						});
+					end);
+					Jumpscare("Monster1", Vector3.new(1.75, 3, 0));
+					return;
+				end;
+				if p19 == "SlashHit" then
+					local v95 = Sound("SlashHit", true);
+					v95.Parent = game.Workspace;
+					v95:Play();
+					return;
+				end;
+				if p19 == "CheckpointElevator" then
+					LoadMap(3);
+					checkpoint = 3;
+					return;
+				end;
+				if p19 == "Part3Checkpoint" then
+					checkpoint = 5;
+					return;
+				end;
+				if p19 == "Part3Checkpoint2" then
+					checkpoint = 6;
+					return;
+				end;
+				if p19 == "Part3Checkpoint3" then
+					checkpoint = 7;
+					LoadMap(6);
+					local v96 = Instance.new("ColorCorrectionEffect", game.Lighting);
+					v96.Brightness = 10;
+					tweens(v96, TweenInfo.new(5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+						Brightness = 0
+					});
+					game.Debris:AddItem(v96, 5);
+					return;
+				end;
+				if p19 == "Part3Checkpoint4" then
+					checkpoint = 9;
+					local v97 = Instance.new("ColorCorrectionEffect", game.Lighting);
+					v97.Brightness = 10;
+					tweens(v97, TweenInfo.new(5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+						Brightness = 0
+					});
+					game.Debris:AddItem(v97, 5);
+					return;
+				end;
+				if p19 == "GhostEar" then
+					local v98 = math.random(1, 4);
+					if v98 == 1 then
+						local v99 = Instance.new("Part", game.Workspace);
+						v99.CFrame = game.Players.LocalPlayer.Character.PrimaryPart.CFrame;
+						v99.CFrame = v99.CFrame + v99.CFrame.rightVector * ({ -4, 4 })[math.random(1, 2)];
+						v99.Transparency = 1;
+						v99.Anchored = true;
+						v99.CanCollide = false;
+						local v100 = Sound("GhostEar", true);
+						v100.Parent = v99;
+						v100:Play();
+						game.Debris:AddItem(v99, 5);
+						return;
+					end;
+					if v98 == 2 then
+						local v101 = Instance.new("Part", game.Workspace);
+						v101.CFrame = game.Players.LocalPlayer.Character.PrimaryPart.CFrame;
+						v101.CFrame = v101.CFrame + v101.CFrame.lookVector * math.random(-100, 100) + v101.CFrame.rightVector * math.random(-100, 100);
+						v101.Transparency = 1;
+						v101.Anchored = true;
+						v101.CanCollide = false;
+						local v102 = Sound("metaldrag", true);
+						v102.Parent = v101;
+						v102:Play();
+						game.Debris:AddItem(v101, 7);
+						return;
+					end;
+					if v98 == 3 then
+						local v103 = Instance.new("Part", game.Workspace);
+						v103.CFrame = game.Players.LocalPlayer.Character.PrimaryPart.CFrame;
+						v103.CFrame = v103.CFrame + v103.CFrame.lookVector * math.random(-100, 100) + v103.CFrame.rightVector * math.random(-100, 100);
+						v103.Transparency = 1;
+						v103.Anchored = true;
+						v103.CanCollide = false;
+						local v104 = Sound("Ghost2", true);
+						v104.Parent = v103;
+						v104:Play();
+						game.Debris:AddItem(v103, 7);
+						return;
+					end;
+					local v105 = Instance.new("Part", game.Workspace);
+					v105.CFrame = game.Players.LocalPlayer.Character.PrimaryPart.CFrame;
+					v105.CFrame = v105.CFrame + v105.CFrame.lookVector * math.random(-100, 100) + v105.CFrame.rightVector * math.random(-100, 100);
+					v105.CFrame = v105.CFrame * CFrame.fromOrientation(0, math.rad(math.random(-180, 180)), 0);
+					tweens(v105, TweenInfo.new(2.1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+						CFrame = v105.CFrame + v105.CFrame.lookVector * 40
+					});
+					v105.Transparency = 1;
+					v105.Anchored = true;
+					v105.CanCollide = false;
+					for v106 = 1, 7 do
+						local v107 = Sound("Metal_Footsound", true);
+						v107.PlaybackSpeed = math.random(90, 110) / 100;
+						v107.Parent = v105;
+						game.Debris:AddItem(v105, 1);
+						wait(0.3);
+					end;
+				end;
+			end;
+		end;
+	end;
+end);
+game.Players.LocalPlayer.CharacterAdded:connect(function()
+	if kf.Parent ~= game.Players.LocalPlayer.PlayerGui then
+		kf.Parent = game.Players.LocalPlayer.PlayerGui;
+	end;
+end);
+game.Players.LocalPlayer.CharacterRemoving:connect(function()
+	if kf.Parent ~= game.Players.LocalPlayer then
+		kf.Parent = game.Players.LocalPlayer;
+	end;
+end);
+TorsoCFrame = { Vector3.new(), 0 };
+PlayerSpeedVR = 0;
+VRCrouchLevel = 0;
+HandCFs = { CFrame.new(), CFrame.new() };
+local v108 = Instance.new("BodyVelocity");
+v108.MaxForce = Vector3.new(100000, 0, 100000);
+SetVRHeadPos = Vector3.new();
+plr = game.Players.LocalPlayer;
+if not l__UserInputService__1.VREnabled then
+	if not l__UserInputService__1.TouchEnabled then
+		local u5 = nil;
+		local u6 = v27;
+		l__UserInputService__1.InputBegan:connect(function(p21, p22)
+			if p21.UserInputType == Enum.UserInputType.Keyboard and not inrbxmenu and not p22 and assetloaded then
+				if not InJournal and p21.KeyCode == Enum.KeyCode.LeftShift or p21.KeyCode == Enum.KeyCode.RightShift and not ingamemenu then
+					if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid") then
+						isrunnin = true;
+						return;
+					end;
+				elseif not InJournal and p21.KeyCode == Enum.KeyCode.LeftControl or p21.KeyCode == Enum.KeyCode.RightControl and not ingamemenu then
+					if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid") then
+						u4 = not u4;
+						return;
+					end;
+				else
+					if not InJournal and p21.KeyCode == Enum.KeyCode.F and checkpoint ~= 7 and checkpoint ~= 8 and checkpoint ~= 9 then
+						flashlight = not flashlight;
+						if flashlight then
+							game.ReplicatedStorage.Events.ServerInput:FireServer("InputSound\194\16718\226\151\1397\226\151\15294\226\151\1529\226\128\162", { "FlashlightOn" });
+							return;
+						else
+							game.ReplicatedStorage.Events.ServerInput:FireServer("InputSound\194\16718\226\151\1397\226\151\15294\226\151\1529\226\128\162", { "FlashlightOff" });
+							return;
+						end;
+					end;
+					if p21.KeyCode == Enum.KeyCode.J then
+						OpenCloseJournal();
+						return;
+					end;
+				end;
+			elseif p21.UserInputType == Enum.UserInputType.MouseButton1 and not InJournal and not inrbxmenu and not p22 and not AnimationCutScene and u5 and u6 < tick() then
+				u6 = tick() + 0.15;
+				game.ReplicatedStorage.Events.ServerInput:FireServer("fireinteractive\194\167498\226\128\1628\226\151\139187\226\151\152\226\151\139\226\128\162897\226\151\15294\226\151\152", { u5, "OnClicked" });
+			end;
+		end);
+		l__UserInputService__1.InputEnded:connect(function(p23)
+			if p23.UserInputType == Enum.UserInputType.Keyboard and not InJournal and not ingamemenu and not inrbxmenu then
+				if (p23.KeyCode == Enum.KeyCode.LeftShift or p23.KeyCode == Enum.KeyCode.RightShift) and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid") then
+					isrunnin = false;
+					return;
+				end;
+			elseif p23.UserInputType == Enum.UserInputType.MouseButton1 and not InJournal and not ingamemenu and not inrbxmenu and not AnimationCutScene and u5 then
+				game.ReplicatedStorage.Events.ServerInput:FireServer("fireinteractive\194\167498\226\128\1628\226\151\139187\226\151\152\226\151\139\226\128\162897\226\151\15294\226\151\152", { u5, "OnRelease" });
+			end;
+		end);
+	else
+		local u7 = nil;
+		local function u8(p24)
+			local v109 = game.Players.LocalPlayer:FindFirstChildOfClass("PlayerGui");
+			local v110 = v109 and v109:FindFirstChild("TouchGui");
+			local v111 = v110 and v110:FindFirstChild("TouchControlFrame");
+			local v112 = v111 and v111:FindFirstChild("DynamicThumbstickFrame");
+			if not v112 or not v110.Enabled then
+				return false;
+			end;
+			local l__AbsolutePosition__113 = v112.AbsolutePosition;
+			local v114 = l__AbsolutePosition__113 + v112.AbsoluteSize;
+			local v115 = false;
+			if l__AbsolutePosition__113.X <= p24.X then
+				v115 = false;
+				if l__AbsolutePosition__113.Y <= p24.Y then
+					v115 = false;
+					if p24.X <= v114.X then
+						v115 = p24.Y <= v114.Y;
+					end;
+				end;
+			end;
+			return v115;
+		end;
+		local u9 = {};
+		local u10 = nil;
+		local u11 = Vector2.new();
+		local function u12(p25, p26)
+			assert(p25.UserInputType == Enum.UserInputType.Touch);
+			assert(p25.UserInputState == Enum.UserInputState.Begin);
+			if u7 == nil and u8(p25.Position) and not p26 then
+				u7 = p25;
+				return;
+			end;
+			u9[p25] = p26;
+		end;
+		local function u13(p27, p28)
+			assert(p27.UserInputType == Enum.UserInputType.Touch);
+			assert(p27.UserInputState == Enum.UserInputState.Change);
+			if p27 == u7 then
+				return;
+			end;
+			if u9[p27] == nil then
+				u9[p27] = p28;
+			end;
+			local v116 = {};
+			for v117, v118 in pairs(u9) do
+				if not v118 then
+					table.insert(v116, v117);
+				end;
+			end;
+			if #v116 == 1 and u9[p27] == false then
+				local l__Delta__119 = p27.Delta;
+				local v120 = Vector2.new(l__Delta__119.X, l__Delta__119.Y) - u11;
+				X = X - l__Delta__119.X / 2.5;
+				Y = Y - l__Delta__119.Y / 2.5;
+				Y = math.clamp(Y, -70, 70);
+				u11 = Vector2.new(l__Delta__119.X, l__Delta__119.Y);
+			end;
+		end;
+		local function u14(p29, p30)
+			assert(p29.UserInputType == Enum.UserInputType.Touch);
+			assert(p29.UserInputState == Enum.UserInputState.End);
+			if p29 == u7 then
+				u7 = nil;
+			end;
+			if u9[p29] == false then
+				u10 = nil;
+			end;
+			u9[p29] = nil;
+		end;
+		l__UserInputService__1.InputBegan:Connect(function(p31, p32)
+			if p31.UserInputType == Enum.UserInputType.Touch then
+				u12(p31, p32);
+			end;
+		end);
+		l__UserInputService__1.InputChanged:Connect(function(p33, p34)
+			if p33.UserInputType == Enum.UserInputType.Touch then
+				u13(p33, p34);
+			end;
+		end);
+		l__UserInputService__1.InputEnded:Connect(function(p35, p36)
+			if p35.UserInputType == Enum.UserInputType.Touch then
+				u14(p35, p36);
+			end;
+		end);
+		local u15 = nil;
+		local u16 = v27;
+		l__UserInputService__1.TouchTap:connect(function()
+			if u15 and u16 < tick() then
+				u16 = tick() + 0.15;
+				game.ReplicatedStorage.Events.ServerInput:FireServer("fireinteractive\194\167498\226\128\1628\226\151\139187\226\151\152\226\151\139\226\128\162897\226\151\15294\226\151\152", { u15, "OnClicked" });
+			end;
+		end);
+	end;
+else
+	game.StarterGui:SetCore("VRLaserPointerMode", 0);
+	game.StarterGui:SetCore("VREnableControllerModels", false);
+	PreviousOffset = Vector3.new();
+	l__UserInputService__1.InputChanged:Connect(function(p37, p38)
+		if p37.UserInputType == Enum.UserInputType.Gamepad1 and p37.KeyCode == Enum.KeyCode.Thumbstick1 then
+			if InJournal then
+				v108.Velocity = Vector3.new(0, 0, 0);
+				return;
+			end;
+		else
+			return;
+		end;
+		local v121, v122, v123 = c.CFrame:ToOrientation();
+		local v124 = math.clamp((Vector3.new() - Vector3.new(p37.Position.X, 0, -p37.Position.Y)).magnitude * 24, 0, 24);
+		v108.Velocity = (CFrame.new(Vector3.new(), Vector3.new(p37.Position.X, 0, -p37.Position.Y)) * CFrame.fromOrientation(0, v122, 0)).LookVector * v124;
+		PlayerSpeedVR = v124 / 16;
+	end);
+	local u17 = nil;
+	local u18 = v27;
+	l__UserInputService__1.InputBegan:connect(function(p39, p40)
+		if p39.UserInputType == Enum.UserInputType.Gamepad1 then
+			if p39.KeyCode == Enum.KeyCode.ButtonR3 and checkpoint ~= 7 and checkpoint ~= 8 and checkpoint ~= 9 then
+				flashlight = not flashlight;
+				if flashlight then
+					game.ReplicatedStorage.Events.ServerInput:FireServer("InputSound\194\16718\226\151\1397\226\151\15294\226\151\1529\226\128\162", { "FlashlightOn" });
+					return;
+				else
+					game.ReplicatedStorage.Events.ServerInput:FireServer("InputSound\194\16718\226\151\1397\226\151\15294\226\151\1529\226\128\162", { "FlashlightOff" });
+					return;
+				end;
+			end;
+			if p39.KeyCode == Enum.KeyCode.ButtonL2 or p39.KeyCode == Enum.KeyCode.ButtonR2 then
+				if u17 and u18 < tick() then
+					u18 = tick() + 0.15;
+					game.ReplicatedStorage.Events.ServerInput:FireServer("fireinteractive\194\167498\226\128\1628\226\151\139187\226\151\152\226\151\139\226\128\162897\226\151\15294\226\151\152", { u17, "OnClicked" });
+					return;
+				end;
+			else
+				if p39.KeyCode == Enum.KeyCode.ButtonL3 then
+					if Mode == "Book" then
+						Mode = "Objectives";
+					else
+						Mode = "Book";
+					end;
+					UpdateJournal();
+					return;
+				end;
+				if p39.KeyCode == Enum.KeyCode.ButtonL1 then
+					OpenCloseJournal();
+					return;
+				end;
+				if p39.KeyCode == Enum.KeyCode.ButtonR1 and plr.Character:FindFirstChildWhichIsA("Humanoid") then
+					game.ReplicatedStorage.Events.ServerInput:FireServer("ForceJump");
+				end;
+			end;
+		end;
+	end);
+	l__UserInputService__1.InputEnded:connect(function(p41)
+		if p41.UserInputType == Enum.UserInputType.Gamepad1 then
+			if p41.KeyCode == Enum.KeyCode.Thumbstick1 then
+				v108.Velocity = Vector3.new(0, 0, 0);
+				return;
+			end;
+			if p41.UserInputType == Enum.UserInputType.MouseButton1 and not InJournal and not ingamemenu and not inrbxmenu and not AnimationCutScene and u17 then
+				game.ReplicatedStorage.Events.ServerInput:FireServer("fireinteractive\194\167498\226\128\1628\226\151\139187\226\151\152\226\151\139\226\128\162897\226\151\15294\226\151\152", { u17, "OnRelease" });
+			end;
+		end;
+	end);
+	game:GetService("VRService").UserCFrameChanged:Connect(function(p42, p43)
+		if p42 == Enum.UserCFrame.Head then
+			local v125, v126, v127 = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame:ToOrientation();
+			local v128, v129, v130 = p43:ToOrientation();
+			local v131 = Vector3.new(p43.Position.X, 0, p43.Position.Z) - PreviousOffset;
+			PreviousOffset = Vector3.new(p43.Position.X, 0, p43.Position.Z);
+			if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+				SetVRHeadPos = plr.Character.HumanoidRootPart.Position;
+				if not AnimationCutScene then
+					TorsoCFrame = { v131, v129 };
+				end;
+			end;
+			c.CFrame = CFrame.new(SetVRHeadPos) * (CFrame.new(0, p43.Position.Y + 1, 0) * CFrame.fromOrientation(v128, v129, v130));
+			VRCrouchLevel = p43.Position.Y;
+			if AnimationCutScene then
+				c.CFrame = CFrame.new(game.Players.LocalPlayer.Character.Head.Position) * CFrame.fromOrientation(v125, v126, v127);
+				c.CFrame = c.CFrame * CFrame.new() * CFrame.fromOrientation(v128, v129, v130);
+				c.CFrame = c.CFrame + c.CFrame.LookVector * 0.5;
+				return;
+			end;
+		elseif p42 == Enum.UserCFrame.RightHand then
+			if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("RightArmVR") then
+				p43 = p43 + p43.lookVector * -0.5;
+				local v132 = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame:ToObjectSpace(CFrame.new()) * CFrame.new(SetVRHeadPos - PreviousOffset + Vector3.new(0, 1, 0));
+				game.Players.LocalPlayer.Character.HumanoidRootPart.RightArmVR.C0 = v132 * p43 * CFrame.fromOrientation(math.rad(90), 0, 0);
+				HandCFs[1] = v132 * p43 * CFrame.fromOrientation(math.rad(90), 0, 0);
+				return;
+			end;
+		elseif p42 == Enum.UserCFrame.LeftHand and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("RightArmVR") then
+			p43 = p43 + p43.lookVector * -0.5;
+			local v133 = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame:ToObjectSpace(CFrame.new()) * CFrame.new(SetVRHeadPos - PreviousOffset + Vector3.new(0, 1, 0));
+			game.Players.LocalPlayer.Character.HumanoidRootPart.LeftArmVR.C0 = v133 * p43 * CFrame.fromOrientation(math.rad(90), 0, 0);
+			HandCFs[2] = v133 * p43 * CFrame.fromOrientation(math.rad(90), 0, 0);
+		end;
+	end);
+end;
+game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, false);
+game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true);
+game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, true);
+InHelicopter = false;
+HelicopterModel = nil;
+HeliDoorRightParts = {};
+RightDoorCFrame = Instance.new("CFrameValue");
+HeliDoorLeftParts = {};
+LeftDoorCFrame = Instance.new("CFrameValue");
+HeliFrontFanParts = {};
+FrontFanCFrame = Instance.new("CFrameValue");
+HeliBackFanParts = {};
+BackFanCFrame = Instance.new("CFrameValue");
+WeldedtoHelicopter = true;
+local v134 = game.ReplicatedStorage.Details.WithinVehicle:Clone();
+outdoors = false;
+if checkpoint ~= 1 then
+	outdoors = true;
+end;
+assetloaded = false;
+detail_spawn = game.Workspace.Chunk_Spawn;
+detail_lab_01 = game.Workspace.Chunk_Lab_01;
+deeplab_01 = game.Workspace.DeepLab_01;
+DollmakerMap = game.Workspace.Dollmaker_Map;
+LargeShipMap = game.Workspace.Dollmaker_Map;
+TwistedMap = game.Workspace.TwistedMap;
+MapData = { detail_spawn, detail_lab_01, deeplab_01, DollmakerMap, LargeShipMap, TwistedMap };
+function LoadMap(p44)
+	local v135, v136, v137 = pairs(MapData);
+	while true do
+		local v138, v139 = v135(v136, v137);
+		if v138 then
+
+		else
+			break;
+		end;
+		v137 = v138;
+		v139.Parent = game.ReplicatedStorage.FullMap;	
+	end;
+	if 1 <= p44 then
+		MapData[p44].Parent = game.Workspace;
+	end;
+end;
+LoadMap(0);
+if checkpoint == 1 then
+	LoadMap(1);
+end;
+if checkpoint == 3 then
+	LoadMap(3);
+end;
+if checkpoint == 4 then
+	LoadMap(4);
+	LargeShipMap.Parent = game.Workspace;
+end;
+spawn(function()
+	local v140 = game.ReplicatedStorage:GetDescendants();
+	local l__ContentProvider__141 = game:GetService("ContentProvider");
+	dialogbox.LoadBox.Visible = true;
+	if not DeveloperMode then
+		for v142 = 1, #v140 do
+			if math.random(1, 100) == 1 then
+				l__ContentProvider__141:PreloadAsync({ v140[v142] });
+				local v143 = "Asset - " .. v140[v142].Name;
+				if v140[v142]:IsA("Sound") then
+					v143 = "Sound - " .. v140[v142].Name;
+				elseif v140[v142]:IsA("BasePart") then
+					v143 = "Part - " .. v140[v142].Name;
+				end;
+				dialogbox.LoadBox.TextLabel.Text = tostring(math.floor(100 / #v140 * v142)) .. "% , " .. v143;
+			end;
+		end;
+	end;
+	dialogbox.LoadBox.Visible = false;
+	assetloaded = true;
+end);
+local v144 = game.ReplicatedStorage.Details.Monster2SideScare:Clone();
+v144.PrimaryPart.CFrame = CFrame.new(15.349, -123.25, -769.023) * CFrame.fromOrientation(0, math.rad(125), 0);
+v144.Parent = game.ReplicatedStorage;
+v144.Humanoid:LoadAnimation(v144.IdleCycle):Play();
+v144.Parent = game.Workspace;
+Step2Jumpscare = game.Workspace.Events.StepTwoJumpscare;
+restriction = {};
+for v145, v146 in pairs(game.Workspace.Events:GetChildren()) do
+	if v146:IsA("BasePart") then
+		v146.Touched:connect(function(p45)
+			local v147 = true;
+			for v148, v149 in pairs(restriction) do
+				if v146.Name == v149 then
+					v147 = false;
+				end;
+			end;
+			if v147 and p45:FindFirstAncestorWhichIsA("Model") == game.Players.LocalPlayer.Character then
+				table.insert(restriction, v146.Name);
+				if v146.Name == "FlashlightTip" then
+					if not l__UserInputService__1.TouchEnabled and not l__UserInputService__1.VREnabled then
+						DescriptionChange("TIP) Press 'F' for flashlight", Color3.fromRGB(255, 255, 0), 3);
+					elseif not l__UserInputService__1.VREnabled then
+						DescriptionChange("TIP) Tap 'Flashlight' to Flashlight", Color3.fromRGB(255, 255, 0), 3);
+					else
+						DescriptionChange("TIP) Trackpad (Left) to Flashlight", Color3.fromRGB(255, 255, 0), 3);
+					end;
+					HideDescription();
+				elseif v146.Name == "StepOneJumpscare" then
+					Step2Jumpscare.Parent = game.Workspace.Events;
+					v146.Cab1.Value.Parent:Destroy();
+					v146.Cab2.Value.Parent:Destroy();
+					v146.Bulk1.Value.Parent:Destroy();
+					v146.Bulk2.Value.Parent:Destroy();
+					v146.Bulk3.Value.Parent:Destroy();
+				elseif v146.Name == "StepTwoJumpscare" then
+					local v150 = game.ReplicatedStorage.Details.SGJumpscare:Clone();
+					v150.Parent = game.Workspace;
+					v150.Humanoid.Animator:LoadAnimation(v150.SpawnAnimation):Play();
+					wait(1);
+					plr.Character:SetPrimaryPartCFrame(CFrame.new(-1502.622, 39.715, -1248.515));
+					v150:Destroy();
+				elseif v146.Name == "TwistedGirlPopup" then
+					wait(1);
+					local v151 = game.ReplicatedStorage.Details.TwistedGirlPopup:Clone();
+					v151.Parent = game.Workspace;
+					local v152 = v151.Humanoid.Animator:LoadAnimation(v151.SpawnAnimation);
+					v151.PrimaryPart.CFrame = CFrame.new(-75.163, -14.587, -601.016) * CFrame.fromOrientation(math.rad(0), math.rad(125), math.rad(0));
+					v152:Play();
+					v152.Stopped:Wait();
+					v151:Destroy();
+				elseif v146.Name == "TwistedGirlSpawn2" then
+					local v153 = game.ReplicatedStorage.Details.TwistedGirlPopup2:Clone();
+					v153.Parent = game.Workspace;
+					local v154 = v153.Humanoid.Animator:LoadAnimation(v153.SpawnAnimation);
+					v153.PrimaryPart.CFrame = CFrame.new(-347.408, -124.473, -334.317) * CFrame.fromOrientation(math.rad(-0.87), math.rad(29.93), math.rad(9.96));
+					v154:Play();
+					v154.Stopped:Wait();
+					v153:Destroy();
+				elseif v146.Name == "TwistedGirlSpawn3" then
+					local v155 = game.ReplicatedStorage.Details.TwistedGirlPopup3:Clone();
+					v155.Parent = game.Workspace;
+					v155.PrimaryPart.CFrame = CFrame.new(-1028.918, 89.516, -882.704) * CFrame.fromOrientation(0, math.rad(-170), 0);
+					v155.Humanoid.Animator:LoadAnimation(v155.SpawnAnimation):Play();
+					wait(7);
+					v155:Destroy();
+				elseif v146.Name == "TwistedGirlSpawn4" then
+					local v156 = game.ReplicatedStorage.Details.TwistedGirlPopup4:Clone();
+					v156.Parent = game.Workspace;
+					local v157 = v156.Humanoid.Animator:LoadAnimation(v156.SpawnAnimation);
+					v156.PrimaryPart.CFrame = CFrame.new(-1229.804, 68.779, -1620.011) * CFrame.fromOrientation(0, math.rad(160), 0);
+					v157:Play();
+					v157.Stopped:Wait();
+					v156:Destroy();
+				elseif v146.Name == "Dollmaker Spawn" then
+					local v158 = game.ReplicatedStorage.Details.DollmakerSpawn:Clone();
+					v158.Parent = game.Workspace;
+					v158.HumanoidRootPart.RobotSound:Play();
+					local v159 = v158:FindFirstChildWhichIsA("Humanoid").Animator:LoadAnimation(v158.Watch);
+					v159:Play();
+					spawn(function()
+						v159.Stopped:wait();
+						v158:Destroy();
+					end);
+					v158.PrimaryPart.CFrame = CFrame.new(-118.819, -7.549, -751.104) * CFrame.fromOrientation(0, math.rad(-145), 0);
+				elseif v146.Name == "CrouchTip" then
+					local v160 = game.ReplicatedStorage.Details.MonsterJumpscare:Clone();
+					v160.Parent = game.Workspace;
+					game.Debris:AddItem(v160, 3);
+					v160:FindFirstChildWhichIsA("Humanoid"):LoadAnimation(v160.Move):Play();
+					v160.PrimaryPart.CFrame = CFrame.new(-180.097, 44.85, -891.616) * CFrame.fromOrientation(0, math.rad(-25), 0);
+					tweens(v160.PrimaryPart, TweenInfo.new(3, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+						CFrame = CFrame.new(-176.294, 44.85, -899.773) * CFrame.fromOrientation(0, math.rad(-25), 0)
+					});
+					detail_lab_01.Parent = game.Workspace;
+					if not l__UserInputService__1.TouchEnabled and not l__UserInputService__1.VREnabled then
+						DescriptionChange("TIP) Press 'CTRL' to Crouch", Color3.fromRGB(255, 255, 0), 3);
+					elseif not l__UserInputService__1.VREnabled then
+						DescriptionChange("TIP) Tap 'Crouch' to Crouch", Color3.fromRGB(255, 255, 0), 3);
+					end;
+					HideDescription();
+					checkpoint = 2;
+				elseif v146.Name == "HideFakeMonster2" then
+					wait(3);
+					v144:Destroy();
+				elseif v146.Name == "Objective1" then
+					AddToObjectives("Find the locker room");
+					AddToObjectives("Unlock the doors");
+					AddToObjectives("Find the Axe (Located in the Bed Rooms)");
+				elseif v146.Name == "Objective2" then
+					DescriptionChange("TIP: You can hide in a locker", Color3.fromRGB(255, 255, 0), 3);
+					HideDescription();
+				elseif v146.Name == "Objective3" then
+					AddToObjectives("Open the cabients for the code");
+				elseif v146.Name == "Objective4" then
+					AddToObjectives("Solve the computer puzzle");
+				elseif v146.Name == "Objective5" then
+					AddToObjectives("OBJECTIVE: Beat the computer game.");
+				elseif v146.Name == "Objective6" then
+					AddToObjectives("A Keycard is within the drawers");
+					AddToObjectives("Avoid moving, the monster is listening");
+				elseif v146.Name == "MapHitbox_01" then
+					ObjectiveTable = {};
+					AddToObjectives("Part 2 | Transparent Bulb");
+					LoadMap(3);
+					DescriptionChange("END OF PART 1", Color3.fromRGB(255, 255, 0), 3);
+					HideDescription();
+				elseif v146.Name == "MapHitbox_02" then
+					ObjectiveTable = {};
+					AddToObjectives("Part 3 | Twisted Girl");
+					LoadMap(4);
+					LargeShipMap.Parent = game.Workspace;
+					DescriptionChange("END OF PART 2", Color3.fromRGB(255, 255, 0), 3);
+					HideDescription();
+					checkpoint = 4;
+				elseif v146.Name == "SendBack01" then
+					ObjectiveTable = {};
+					wait(3);
+					for v161, v162 in pairs(v146.Candle.Value:GetChildren()) do
+						if v162:IsA("Attachment") then
+							v162:Destroy();
+						end;
+					end;
+					Sound("Thump", true);
+					wait(1);
+					DescriptionChange("END OF CHAPTER 1", Color3.fromRGB(255, 255, 0), 3);
+					HideDescription();
+					game.ReplicatedStorage.Events.ServerInput:FireServer("TeleportBackToLobby");
+				elseif v146.Name == "GasTip_01" then
+					spawn(function()
+						wait(2);
+						v146.Lightbulb5.Value.Bulb:FindFirstChildWhichIsA("PointLight").Enabled = false;
+						Sound("LightbulbBreak", true).Parent = v146.Lightbulb1.Value.Bulb;
+						v146.Lightbulb5.Value.NeonPart.Material = Enum.Material.CorrodedMetal;
+						wait(1);
+						v146.Lightbulb4.Value.Bulb:FindFirstChildWhichIsA("PointLight").Enabled = false;
+						Sound("LightbulbBreak", true).Parent = v146.Lightbulb1.Value.Bulb;
+						v146.Lightbulb4.Value.NeonPart.Material = Enum.Material.CorrodedMetal;
+						wait(1);
+						v146.Lightbulb1.Value.Bulb:FindFirstChildWhichIsA("PointLight").Enabled = false;
+						Sound("LightbulbBreak", true).Parent = v146.Lightbulb1.Value.Bulb;
+						v146.Lightbulb1.Value.NeonPart.Material = Enum.Material.CorrodedMetal;
+						wait(1);
+						v146.Lightbulb2.Value.Bulb:FindFirstChildWhichIsA("PointLight").Enabled = false;
+						Sound("LightbulbBreak", true).Parent = v146.Lightbulb2.Value.Bulb;
+						v146.Lightbulb2.Value.NeonPart.Material = Enum.Material.CorrodedMetal;
+						wait(1);
+						v146.Lightbulb3.Value.Bulb:FindFirstChildWhichIsA("PointLight").Enabled = false;
+						Sound("LightbulbBreak", true).Parent = v146.Lightbulb3.Value.Bulb;
+						v146.Lightbulb3.Value.NeonPart.Material = Enum.Material.CorrodedMetal;
+						wait(1);
+						DescriptionChange("Tip: Find somewhere safe when lights go out", Color3.fromRGB(255, 255, 0), 3);
+						HideDescription();
+						wait(2);
+						v146.Lightbulb3.Value.Bulb:FindFirstChildWhichIsA("PointLight").Enabled = true;
+						v146.Lightbulb3.Value.NeonPart.Material = Enum.Material.Neon;
+						wait(0.2);
+						v146.Lightbulb1.Value.Bulb:FindFirstChildWhichIsA("PointLight").Enabled = true;
+						v146.Lightbulb1.Value.NeonPart.Material = Enum.Material.Neon;
+						wait(0.2);
+						v146.Lightbulb2.Value.Bulb:FindFirstChildWhichIsA("PointLight").Enabled = true;
+						v146.Lightbulb2.Value.NeonPart.Material = Enum.Material.Neon;
+						wait(0.2);
+						v146.Lightbulb5.Value.Bulb:FindFirstChildWhichIsA("PointLight").Enabled = true;
+						v146.Lightbulb5.Value.NeonPart.Material = Enum.Material.Neon;
+						wait(0.2);
+						v146.Lightbulb4.Value.Bulb:FindFirstChildWhichIsA("PointLight").Enabled = true;
+						v146.Lightbulb4.Value.NeonPart.Material = Enum.Material.Neon;
+					end);
+					AddToObjectives("Go into the Maintenance");
+					AddToObjectives("Disable the pipes");
+				elseif v146.Name == "Checkpoint8" then
+					checkpoint = 8;
+				elseif v146.Name == "Introduction_02" then
+					local v163 = game.ReplicatedStorage.Details.Monster2SideScare:Clone();
+					v163.PrimaryPart.CFrame = CFrame.new(-156, -70.5, -804) * CFrame.fromOrientation(0, math.rad(-85), 0);
+					v163.Parent = game.ReplicatedStorage;
+					v163.Humanoid:LoadAnimation(v163.RunCycle):Play();
+					v163.Parent = game.Workspace;
+					tweens(v163.PrimaryPart, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+						CFrame = CFrame.new(-156, -70.5, -746) * CFrame.fromOrientation(0, math.rad(-85), 0)
+					});
+					local v164 = Sound("Sound2", true);
+					wait(2);
+					v163:Destroy();
+				elseif v146.Name == "VentScare_01" then
+					local v165 = game.ReplicatedStorage.Details.Monster2SideScare:Clone();
+					v165.PrimaryPart.CFrame = CFrame.new(-157.597, -74.95, -912.261) * CFrame.fromOrientation(0, math.rad(225), 0);
+					v165.Parent = game.ReplicatedStorage;
+					v165.Humanoid:LoadAnimation(v165.RunCycle):Play();
+					v165.Parent = game.Workspace;
+					tweens(v165.PrimaryPart, TweenInfo.new(0.8, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+						CFrame = CFrame.new(-179.669, -74.95, -889.932) * CFrame.fromOrientation(0, math.rad(225), 0)
+					});
+					v165.ModelHead:FindFirstChildWhichIsA("Attachment"):Destroy();
+					wait(0.8);
+					v165:Destroy();
+				elseif v146.Name == "CrystalTip_01" then
+					AddToObjectives("Find a way up the crystal plant (Not parkour)");
+					AddToObjectives("Look for a storage room");
+				end;
+				HideDescription();
+			end;
+		end);
+	end;
+end;
+Step2Jumpscare.Parent = game.ReplicatedStorage;
+spawn(function()
+	local v166 = Instance.new("BlurEffect", c);
+	local v167 = Instance.new("ColorCorrectionEffect", c);
+	v167.Brightness = -1;
+	HelicopterModel = game.ReplicatedStorage.Details.Helicopter:Clone();
+	InHelicopter = true;
+	HelicopterModel.Parent = game.Workspace;
+	local function v168(p46)
+		local v169 = {};
+		for v170, v171 in pairs(p46) do
+			if v171:IsA("BasePart") then
+				table.insert(v169, { v171, HelicopterModel.Torso.CFrame:ToObjectSpace(v171.CFrame) });
+			end;
+		end;
+		return v169;
+	end;
+	HeliDoorLeftParts = v168(HelicopterModel.DoorLeft:GetChildren());
+	HeliDoorRightParts = v168(HelicopterModel.DoorRight:GetChildren());
+	HeliFrontFanParts = v168(HelicopterModel.FrontRotor:GetChildren());
+	HeliBackFanParts = v168(HelicopterModel.BackRotor:GetChildren());
+	for v172, v173 in pairs((v168(HelicopterModel:GetChildren()))) do
+		v173[1].CFrame = CFrame.new(-45.387, 16.114, 46.846) * CFrame.fromOrientation(math.rad(90), math.rad(36.33), math.rad(106.33)) * v173[2];
+	end;
+	local v174 = HelicopterModel:FindFirstChildWhichIsA("Humanoid"):LoadAnimation(script.Defaults.HelicopterModel);
+	while true do
+		wait();
+		if assetloaded then
+			break;
+		end;	
+	end;
+	if not skipheliCutscene then
+		AnimationCutScene = true;
+	end;
+	wait(2);
+	spawn(function()
+		if not skipheliCutscene then
+			DescriptionChange("1966, Mount Everest.", Color3.fromRGB(255, 255, 255), 3);
+			HideDescription();
+			return;
+		end;
+		if checkpoint == 3 then
+			ObjectiveTable = {};
+			AddToObjectives("Part 2 | Transparent Bulb");
+			DescriptionChange("Part 2 Level", Color3.fromRGB(255, 255, 255), 3);
+			HideDescription();
+			return;
+		end;
+		if checkpoint == 4 then
+			ObjectiveTable = {};
+			AddToObjectives("Part 3 | Twisted Girl");
+			DescriptionChange("Part 3 Level", Color3.fromRGB(255, 255, 255), 3);
+			HideDescription();
+		end;
+	end);
+	spawn(function()
+		if not skipheliCutscene then
+			v174:Play();
+			HelicopterModel.Torso.Rotor:Play();
+			v134.Parent = HelicopterModel.Torso.Rotor;
+			HelicopterModel.Torso.Rotor.Volume = 0;
+			tweens(HelicopterModel.Torso.Rotor, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+				Volume = 0.6
+			});
+			spawn(function()
+				wait(v174.Length - 4.1);
+				tweens(HelicopterModel.Torso.Rotor, TweenInfo.new(4, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+					Volume = 0
+				});
+				wait(4);
+				HelicopterModel:Destroy();
+				HelicopterModel = nil;
+				InHelicopter = false;
+			end);
+			DefaultAnimations[7]:Play();
+			wait(DefaultAnimations[7].Length - 0.1);
+			local l__CFrame__175 = game.Players.LocalPlayer.Character.Torso.CFrame;
+			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = l__CFrame__175;
+			local v176, v177, v178 = l__CFrame__175:ToOrientation();
+			X = v177 * 180 / math.pi;
+			Y = v176 * 180 / math.pi;
+		else
+			HelicopterModel:Destroy();
+			HelicopterModel = nil;
+			InHelicopter = false;
+		end;
+		AnimationCutScene = false;
+		WeldedtoHelicopter = false;
+		local v179 = v23[checkpoint];
+		if DeveloperMode then
+			v179 = DeveloperSpawnCFrame;
+		end;
+		game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(v179[1]);
+		X = v179[2];
+		Y = 0;
+		if not skipheliCutscene then
+			DescriptionChange("Press 'SHIFT' to run", Color3.fromRGB(255, 255, 255), 3);
+			HideDescription();
+		end;
+	end);
+	spawn(function()
+		if not skipheliCutscene then
+			wait(32.5);
+			v134:Destroy();
+			outdoors = true;
+			local v180 = Instance.new("ColorCorrectionEffect", game.Lighting);
+			tweens(v180, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+				Brightness = -1
+			});
+			wait(2);
+			tweens(v180, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+				Brightness = 0
+			});
+			game.Debris:AddItem(v180, 2);
+		end;
+	end);
+	spawn(function()
+		wait(0.5);
+		tweens(v166, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+			Size = 0
+		});
+		tweens(v167, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+			Brightness = 0
+		});
+		tweens(cpo, TweenInfo.new(2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, 0, false, 0), {
+			Value = CFrame.new(-16.497, 84.357, 117.112) * CFrame.fromOrientation(math.rad(-15), math.rad(-45), 0)
+		});
+		game.Debris:AddItem(v166, 2);
+		game.Debris:AddItem(v167, 2);
+	end);
+end);
+yposaim = math.random(1, 2048);
+xposaim = math.random(1, 2048);
+noiseX = Instance.new("NumberValue");
+noiseY = Instance.new("NumberValue");
+local v181 = game.ReplicatedStorage.Details.SmokeBreathing:Clone();
+v181.Parent = game.Workspace;
+spotlight = game.ReplicatedStorage.Details.Flashlight:Clone();
+flashlightpoint = Instance.new("Attachment");
+spotlight.Parent = flashlightpoint;
+spawn(function()
+	while true do
+		if isrunnin then
+			wait(0.75);
+			v181.Attachment.Particles.Enabled = true;
+			wait(0.08);
+			v181.Attachment.Particles.Enabled = false;
+		else
+			wait(2);
+			v181.Attachment.Particles.Enabled = true;
+			wait(0.08);
+			v181.Attachment.Particles.Enabled = false;
+		end;	
+	end;
+end);
+JournalEnabled = false;
+local u19 = 0;
+local u20 = tick();
+local function u21(p47, p48, p49, p50)
+	if p47 ~= 0 then
+		if not AnimationCutScene then
+			for v182, v183 in pairs(DefaultAnimations) do
+				if v183 ~= DefaultAnimations[p47] then
+					v183:Stop();
+				end;
+			end;
+			if #DefaultAnimations > 0 and not DefaultAnimations[p47].IsPlaying then
+				DefaultAnimations[p47]:Play(p48, p49, DefaultAnimations[p47].Length / p50);
+				return;
+			end;
+		end;
+	else
+		for v184, v185 in pairs(DefaultAnimations) do
+			v185:Stop();
+		end;
+	end;
+end;
+game:GetService("RunService").Heartbeat:Connect(function()
+	local v186 = "Default";
+	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Head") then
+		local v187 = nil;
+		for v188, v189 in pairs(game.ReplicatedStorage.MapRegion:GetChildren()) do
+			local v190 = v189.CFrame:ToObjectSpace(game.Players.LocalPlayer.Character.PrimaryPart.CFrame);
+			if v190.Position.X < v189.Size.X / 2 and -v189.Size.X / 2 < v190.Position.X and v190.Position.Z < v189.Size.Z / 2 and -v189.Size.Z / 2 < v190.Position.Z and v190.Position.Y < v189.Size.Y / 2 and -v189.Size.Y / 2 < v190.Position.Y then
+				v186 = v189.Name;
+			end;
+		end;
+		v187 = function(p51, p52)
+			local v191 = { outdoorambience, incaveambience, labAmbience, deeplabambience, awareness, thermoplantambience, clockworkambience, TransportAmbience, LeightAmbience, TwistedGirlAmbience, VHSAmbience };
+			for v192, v193 in pairs(v191) do
+				if v192 ~= p51 then
+					tweens(v193, TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+						Volume = 0
+					});
+				end;
+			end;
+			tweens(v191[p51], TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+				Volume = p52
+			});
+		end;
+		if v186 == "Cave" then
+			v187(2, 0.4);
+		elseif v186 == "Lab_01" then
+			v187(3, 0.4);
+		elseif v186 == "Deeplab" then
+			v187(4, 0.75);
+		elseif v186 == "Awareness" then
+			v187(5, 0.75);
+		elseif v186 == "ThermoPlant" then
+			v187(6, 0.5);
+		elseif v186 == "Clockwork" then
+			v187(7, 0.6);
+		elseif v186 == "Transport" then
+			v187(8, 0.3);
+		elseif v186 == "Leight" then
+			v187(9, 0.8);
+		elseif v186 == "Twisted" then
+			v187(10, 0.7);
+		elseif v186 == "VHS" then
+			v187(11, 3);
+		else
+			v187(1, 0.4);
+		end;
+	end;
+	if checkpoint == 7 or checkpoint == 8 or checkpoint == 9 then
+		if game.Workspace.Terrain.Clouds.Color ~= Color3.fromRGB(150, 0, 0) then
+			game.Workspace.Terrain.Clouds.Color = Color3.fromRGB(150, 0, 0);
+		end;
+		if flashlight then
+			flashlight = false;
+			game.ReplicatedStorage.Events.ServerInput:FireServer("InputSound\194\16718\226\151\1397\226\151\15294\226\151\1529\226\128\162", { "FlashlightOff" });
+		end;
+	elseif game.Workspace.Terrain.Clouds.Color ~= Color3.fromRGB(63, 63, 63) then
+		game.Workspace.Terrain.Clouds.Color = Color3.fromRGB(63, 63, 63);
+	end;
+	if not l__UserInputService__1.VREnabled then
+		if PreviousCountOfObjectives ~= #ObjectiveTable then
+			tweens(Journal.Button.ImageButton, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+				ImageColor3 = Color3.fromRGB(255, 115, 0), 
+				ImageTransparency = 0
+			});
+		else
+			tweens(Journal.Button.ImageButton, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+				ImageColor3 = Color3.fromRGB(255, 255, 255), 
+				ImageTransparency = 0.5
+			});
+		end;
+	elseif PreviousCountOfObjectives ~= #ObjectiveTable then
+		tweens(Journal.Button.ImageButton, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+			ImageColor3 = Color3.fromRGB(255, 115, 0), 
+			ImageTransparency = 0.5
+		});
+	else
+		tweens(Journal.Button.ImageButton, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+			ImageColor3 = Color3.fromRGB(255, 255, 255), 
+			ImageTransparency = 1
+		});
+		Journal.Button.BackgroundTransparency = 1;
+		Journal.Button.TextLabel.Text = "";
+	end;
+	local v194 = math.noise(xposaim / 500, tick() / 500);
+	xposaim = xposaim + 4;
+	yposaim = yposaim + 4;
+	tweens(noiseX, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+		Value = math.noise(tick() / 500, yposaim / 500) * 2
+	});
+	tweens(noiseY, TweenInfo.new(0.05, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+		Value = v194 * 2
+	});
+	if InHelicopter then
+		for v195, v196 in pairs(HeliDoorLeftParts) do
+			v196[1].CFrame = HelicopterModel.Torso.CFrame * v196[2] * LeftDoorCFrame.Value;
+		end;
+		for v197, v198 in pairs(HeliDoorRightParts) do
+			v198[1].CFrame = HelicopterModel.Torso.CFrame * v198[2] * RightDoorCFrame.Value;
+		end;
+		for v199, v200 in pairs(HeliFrontFanParts) do
+			v200[1].CFrame = HelicopterModel.Torso.CFrame * v200[2] * FrontFanCFrame.Value;
+		end;
+		for v201, v202 in pairs(HeliBackFanParts) do
+			v202[1].CFrame = HelicopterModel.Torso.CFrame * v202[2] * BackFanCFrame.Value;
+		end;
+		u19 = u19 + 2;
+		FrontFanCFrame.Value = CFrame.new(0, 0, 0) * CFrame.fromOrientation(0, math.rad(u19), 0);
+		BackFanCFrame.Value = CFrame.new(0, 0, 0) * CFrame.fromOrientation(0, math.rad(u19), 0);
+	end;
+	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid") then
+		if WeldedtoHelicopter and InHelicopter then
+			game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true;
+			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = HelicopterModel.Torso.CFrame * CFrame.fromOrientation(math.rad(-90), 0, 0);
+		else
+			game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false;
+			if Journal.Parent ~= kf and assetloaded then
+				Journal.Parent = kf;
+				JournalEnabled = true;
+			end;
+		end;
+	end;
+	if c.CameraType ~= Enum.CameraType.Scriptable then
+		c.CameraType = Enum.CameraType.Scriptable;
+	end;
+	if c.HeadLocked ~= false and l__UserInputService__1.VREnabled then
+		c.HeadLocked = false;
+	end;
+	if not l__UserInputService__1.VREnabled then
+		if plr.Character.HumanoidRootPart:FindFirstChild("RightArmVR") then
+			plr.Character.HumanoidRootPart:FindFirstChild("RightArmVR"):Destroy();
+		end;
+		if plr.Character.HumanoidRootPart:FindFirstChild("LeftArmVR") then
+			plr.Character.HumanoidRootPart:FindFirstChild("LeftArmVR"):Destroy();
+		end;
+		if plr.Character:FindFirstChild("LeftCollision") then
+			plr.Character:FindFirstChild("LeftCollision"):Destroy();
+		end;
+		if plr.Character:FindFirstChild("RightCollision") then
+			plr.Character:FindFirstChild("RightCollision"):Destroy();
+		end;
+	end;
+	if not l__UserInputService__1.TouchEnabled then
+		if not (not ingamemenu) or not (not inrbxmenu) or InJournal then
+			l__UserInputService__1.MouseIconEnabled = true;
+			l__UserInputService__1.MouseBehavior = Enum.MouseBehavior.Default;
+			tweens(menublur, TweenInfo.new(0.4, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+				Size = 35
+			});
+			tweens(menucolour, TweenInfo.new(0.4, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+				Brightness = -0.25, 
+				Saturation = -1
+			});
+			game.Players.LocalPlayer:GetMouse().Icon = "";
+		else
+			l__UserInputService__1.MouseIconEnabled = true;
+			l__UserInputService__1.MouseBehavior = Enum.MouseBehavior.LockCenter;
+			game.Players.LocalPlayer:GetMouse().Icon = "rbxassetid://46537754";
+			tweens(menublur, TweenInfo.new(0.4, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+				Size = 0
+			});
+			tweens(menucolour, TweenInfo.new(0.4, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+				Brightness = 0, 
+				Saturation = 0
+			});
+		end;
+	end;
+	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+		game.Players.LocalPlayer:GetMouse().TargetFilter = game.Players.LocalPlayer.Character;
+		if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character:FindFirstChild("Head") and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0 then
+			if v53.Parent ~= nil then
+				v53.Parent = nil;
+				v54.Parent = nil;
+			end;
+			if not AnimationCutScene then
+				if not l__UserInputService__1.VREnabled then
+					local v203 = nil;
+					if not l__UserInputService__1.TouchEnabled then
+						v24.Parent = game.Players.LocalPlayer.Character.HumanoidRootPart;
+						local v204 = l__UserInputService__1:GetMouseDelta();
+						local v205 = l__UserInputService__1.MouseDeltaSensitivity * 0.5 * 0.7 * 0.6;
+						X = X - v204.X * v205;
+						Y = Y - v204.Y * v205;
+					else
+						game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position) * CFrame.fromOrientation(0, X, 0);
+					end;
+					if Y > 70 then
+						Y = 70;
+					elseif Y < -70 then
+						Y = -70;
+					end;
+					game.ReplicatedStorage.Events.ServerInput:FireServer("aimheadN989\226\128\162981\226\151\1529\226\128\1628\226\151\13918\226\128\16289159", { Y, false });
+					local v206 = nil;
+					local l__mouse__207 = game.Players.LocalPlayer:GetMouse();
+					if l__mouse__207.Target and (l__mouse__207.Target:FindFirstChild("Interact") and (l__mouse__207.Target.CFrame.p - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 10) then
+						v206 = l__mouse__207.Target;
+					end;
+					if v206 and v26.Parent ~= v206 then
+						v26.Parent = v206;
+						u17 = v206;
+						local v208 = math.clamp(v206.Size.magnitude, 0.1, 1);
+						v26.Size = UDim2.new(v208, 0, v208, 0);
+					elseif not v206 and v26.Parent ~= nil then
+						v26.Parent = nil;
+						u17 = nil;
+					end;
+					local l__FloorMaterial__209 = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").FloorMaterial;
+					local v210 = nil;
+					for v211, v212 in pairs({ { Enum.Material.Sand, "Snow" }, { Enum.Material.Snow, "Snow" }, { Enum.Material.Basalt, "Snow" }, { Enum.Material.Ice, "Concrete" }, { Enum.Material.Concrete, "Concrete" }, { Enum.Material.Rock, "Concrete" }, { Enum.Material.Slate, "Concrete" }, { Enum.Material.Cobblestone, "Concrete" }, { Enum.Material.Ground, "Concrete" }, { Enum.Material.Grass, "Concrete" }, { Enum.Material.Metal, "Metal" }, { Enum.Material.CorrodedMetal, "Metal" }, { Enum.Material.DiamondPlate, "Metal" }, { Enum.Material.Wood, "Wood" }, { Enum.Material.WoodPlanks, "Wood" } }) do
+						if l__FloorMaterial__209 == v212[1] then
+							v210 = v212[2];
+							break;
+						end;
+					end;
+					if u4 and game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").MoveDirection.magnitude > 0 then
+						if u20 < tick() then
+							u20 = tick() + 0.7;
+							if v210 then
+								game.ReplicatedStorage.Events.ServerInput:FireServer("CreateFootstepSoundN9\226\152\18689\226\128\1628\226\151\1397\226\151\1529", { v210 });
+							end;
+						end;
+						tweens(sprinting, TweenInfo.new(0.33, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Value = 1
+						});
+					elseif not isrunnin and game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").MoveDirection.magnitude > 0 then
+						if u20 < tick() then
+							u20 = tick() + 0.4;
+							if v210 then
+								game.ReplicatedStorage.Events.ServerInput:FireServer("CreateFootstepSoundN9\226\152\18689\226\128\1628\226\151\1397\226\151\1529", { v210 });
+							end;
+						end;
+						tweens(sprinting, TweenInfo.new(0.33, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Value = 1
+						});
+					elseif game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").MoveDirection.magnitude > 0 then
+						if u20 < tick() then
+							u20 = tick() + 0.25;
+							if v210 then
+								game.ReplicatedStorage.Events.ServerInput:FireServer("CreateFootstepSoundN9\226\152\18689\226\128\1628\226\151\1397\226\151\1529", { v210 });
+							end;
+						end;
+						tweens(sprinting, TweenInfo.new(0.33, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Value = 2
+						});
+					end;
+					c.CFrame = CFrame.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position) * CFrame.fromOrientation(math.rad(Y + bobble.Value.Y + v25.Value), math.rad(X + bobble.Value.X), 0);
+					c.CFrame = c.CFrame + game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame.upVector * (1.75 + cdrop.Value);
+					c.CFrame = c.CFrame + c.CFrame.UpVector * 0.5 + c.CFrame.LookVector * 0.6;
+					v203 = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid");
+					if not u4 then
+						v203.WalkSpeed = 7 + sprinting.Value * 6;
+						tweens(fieldtween, TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Value = 70 * (1 + sprinting.Value / 4 - 0.25)
+						});
+						tweens(cdrop, TweenInfo.new(0.3, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Value = 0
+						});
+					else
+						v203.WalkSpeed = 7;
+						tweens(fieldtween, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Value = 65
+						});
+						tweens(cdrop, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, 0, false, 0), {
+							Value = -1.5
+						});
+					end;
+					c.FieldOfView = fieldtween.Value;
+					for v213, v214 in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+						if v214:IsA("Accessory") then
+							for v215, v216 in pairs(v214:GetDescendants()) do
+								if v216:IsA("BasePart") then
+									v216.Transparency = 1;
+								end;
+							end;
+						elseif v214:IsA("BasePart") then
+							v214.Transparency = 1;
+							if v214.Name ~= "HumanoidRootPart" then
+								v214.Massless = true;
+							end;
+							for v217, v218 in pairs(v214:GetChildren()) do
+								if v218:IsA("Decal") then
+									v218.Transparency = 1;
+								elseif v218:IsA("Sound") and v218.Name ~= "ServerSound" then
+									v218:Destroy();
+								end;
+							end;
+						end;
+					end;
+					local v219 = false;
+					if game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid"):GetState() == Enum.HumanoidStateType.Freefall then
+						tweens(v25, TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Value = 10
+						});
+						u21(3, 0.2, 2, 1.5);
+						v219 = true;
+					elseif game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid"):GetState() == Enum.HumanoidStateType.Landed then
+						tweens(v25, TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Value = -5
+						});
+					else
+						tweens(v25, TweenInfo.new(0.25, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Value = 0
+						});
+					end;
+					if game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").MoveDirection.magnitude > 0 and not v219 then
+						local v220 = 8;
+						if isrunnin and not u4 then
+							v220 = 12;
+							u21(2, 0.2, 2, 0.4);
+							DefaultAnimations[2]:AdjustSpeed(DefaultAnimations[2].Length / 0.4);
+						elseif not u4 then
+							u21(2, 0.2, 2, 0.6);
+							DefaultAnimations[2]:AdjustSpeed(DefaultAnimations[2].Length / 0.6);
+						elseif u4 then
+							v220 = 4;
+							u21(5, 0.2, 2, 1);
+						end;
+						if u4 then
+							local v221 = math.cos(tick() * v220) / 7 * 5;
+							local v222 = -math.abs(math.sin(tick() * v220)) * 3;
+						end;
+						tweens(bobble, TweenInfo.new(0.25, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Value = Vector3.new(math.cos(tick() * v220) / 7 * (sprinting.Value * 6), -math.abs(math.sin(tick() * v220)) * (sprinting.Value * 4), 0)
+						});
+					else
+						if not v219 and not u4 then
+							u21(1, 0.2, 2, 2);
+						elseif not v219 and u4 then
+							u21(4, 0.2, 2, 2);
+						end;
+						tweens(bobble, TweenInfo.new(0.25, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), {
+							Value = Vector3.new(0, 0, 0)
+						});
+					end;
+					v24.CFrame = CFrame.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position) * CFrame.fromOrientation(0, math.rad(X), 0);
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(game.Players.LocalPlayer.Character.HumanoidRootPart.Position) * CFrame.fromOrientation(0, math.rad(X), 0);
+				else
+					local v223 = {};
+					local v224 = { plr.Character };
+					for v225, v226 in pairs(game.Players:GetChildren()) do
+						if v226.Character then
+							table.insert(v224, v226.Character);
+						end;
+					end;
+					local l__CFrame__227 = plr.Character["Right Arm"].CFrame;
+					local v228 = l__CFrame__227 + l__CFrame__227.upVector * -1;
+					for v229, v230 in pairs(game.Workspace:FindPartsInRegion3WithIgnoreList(Region3.new(v228.Position - Vector3.new(1, 1, 1), v228.Position + Vector3.new(1, 1, 1)), v224, math.huge)) do
+						if v230:FindFirstChildWhichIsA("BindableEvent") and v230:FindFirstChild("Interact") then
+							table.insert(v223, v230);
+						end;
+					end;
+					local l__CFrame__231 = plr.Character["Left Arm"].CFrame;
+					local v232 = l__CFrame__231 + l__CFrame__231.upVector * -1;
+					for v233, v234 in pairs(game.Workspace:FindPartsInRegion3WithIgnoreList(Region3.new(v232.Position - Vector3.new(1, 1, 1), v232.Position + Vector3.new(1, 1, 1)), v224, math.huge)) do
+						if v234:FindFirstChildWhichIsA("BindableEvent") and v234:FindFirstChild("Interact") then
+							table.insert(v223, v234);
+						end;
+					end;
+					local v235 = nil;
+					for v236, v237 in pairs(v223) do
+						if (v237.Position - plr.Character.Head.Position).magnitude then
+							v235 = v237;
+							local l__magnitude__238 = (v237.Position - plr.Character.Head.Position).magnitude;
+						end;
+					end;
+					if v235 and v26.Parent ~= v235 then
+						v26.Parent = v235;
+						u17 = v235;
+						local v239 = math.clamp(v235.Size.magnitude, 0.1, 1);
+						v26.Size = UDim2.new(v239, 0, v239, 0);
+					elseif not v235 and v26.Parent ~= nil then
+						v26.Parent = nil;
+						u17 = nil;
+					end;
+					local l__FloorMaterial__240 = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").FloorMaterial;
+					local v241 = nil;
+					for v242, v243 in pairs({ { Enum.Material.Sand, "Snow" }, { Enum.Material.Snow, "Snow" }, { Enum.Material.Basalt, "Snow" }, { Enum.Material.Ice, "Concrete" }, { Enum.Material.Concrete, "Concrete" }, { Enum.Material.Rock, "Concrete" }, { Enum.Material.Slate, "Concrete" }, { Enum.Material.Cobblestone, "Concrete" }, { Enum.Material.Ground, "Concrete" }, { Enum.Material.Grass, "Concrete" }, { Enum.Material.Metal, "Metal" }, { Enum.Material.CorrodedMetal, "Metal" }, { Enum.Material.DiamondPlate, "Metal" }, { Enum.Material.Wood, "Wood" }, { Enum.Material.WoodPlanks, "Wood" } }) do
+						if l__FloorMaterial__240 == v243[1] then
+							v241 = v243[2];
+							break;
+						end;
+					end;
+					if game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").MoveDirection.magnitude > 0 then
+						if u20 < tick() then
+							u20 = tick() + math.clamp(0.35 / PlayerSpeedVR, 0, 0.8);
+							if v241 then
+								game.ReplicatedStorage.Events.ServerInput:FireServer("CreateFootstepSoundN9\226\152\18689\226\128\1628\226\151\1397\226\151\1529", { v241 });
+							end;
+						end;
+						u21(2, 0.2, 2, 1 / PlayerSpeedVR);
+						DefaultAnimations[2]:AdjustSpeed(DefaultAnimations[2].Length / (1 / PlayerSpeedVR));
+					else
+						u21(1, 0.2, 2, 2);
+					end;
+					if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+						for v244, v245 in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+							if v245.Name ~= "Left Arm" and v245.Name ~= "Right Arm" and (v245:IsA("BasePart") or v245:IsA("Decal")) then
+								v245.Transparency = 1;
+							end;
+						end;
+						v108.Parent = game.Players.LocalPlayer.Character.HumanoidRootPart;
+						game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").WalkSpeed = 0;
+					end;
+					game.ReplicatedStorage.Events.ServerInput:FireServer("BodyCrouchVR", VRCrouchLevel);
+					game.ReplicatedStorage.Events.ServerInput:FireServer("UpdateHandsVR", HandCFs);
+					plr.Character:FindFirstChild("HumanoidRootPart").CFrame = CFrame.new(plr.Character:FindFirstChild("HumanoidRootPart").Position + TorsoCFrame[1]) * CFrame.fromOrientation(0, TorsoCFrame[2], 0);
+				end;
+			else
+				for v246, v247 in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+					if v247:IsA("BasePart") and v247.Name ~= "Head" and v247.Name ~= "HumanoidRootPart" then
+						v247.Transparency = 0;
+						for v248, v249 in pairs(v247:GetChildren()) do
+							if v249:IsA("Decal") then
+								v249.Transparency = 0;
+							end;
+						end;
+					end;
+				end;
+				for v250, v251 in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+					if v251:IsA("Accessory") then
+						for v252, v253 in pairs(v251:GetDescendants()) do
+							if v253:IsA("BasePart") then
+								v253.Transparency = 1;
+							end;
+						end;
+					end;
+				end;
+				c.CFrame = plr.Character.Head.CFrame;
+				c.CFrame = c.CFrame + c.CFrame.LookVector * 0.5;
+				game.ReplicatedStorage.Events.ServerInput:FireServer("aimheadN989\226\128\162981\226\151\1529\226\128\1628\226\151\13918\226\128\16289159", { 0, false });
+			end;
+		else
+			if v53.Parent ~= game.Lighting then
+				v53.Parent = game.Lighting;
+				v54.Parent = game.Lighting;
+			end;
+			if game.Workspace:FindFirstChild(game.Players.LocalPlayer.Name) and game.Workspace:FindFirstChild(game.Players.LocalPlayer.Name):FindFirstChild("Head") then
+				c.CFrame = game.Workspace:FindFirstChild(game.Players.LocalPlayer.Name).Head.CFrame;
+			end;
+		end;
+	end;
+	c.CFrame = c.CFrame * CFrame.fromOrientation(math.rad(noiseX.Value), math.rad(noiseY.Value), 0);
+	if flashlight and assetloaded then
+		if not l__UserInputService__1.VREnabled then
+			flashlightpoint.Parent = game.Players.LocalPlayer.Character.Head;
+			flashlightpoint.WorldPosition = c.CFrame.Position + c.CFrame.LookVector * 0 + c.CFrame.UpVector * -0.5;
+			local v254, v255, v256 = c.CFrame:ToOrientation();
+			flashlightpoint.WorldOrientation = Vector3.new(v254 * 180 / math.pi, v255 * 180 / math.pi, v256 * 180 / math.pi);
+		else
+			flashlightpoint.Parent = game.Players.LocalPlayer.Character["Right Arm"];
+			local l__CFrame__257 = game.Players.LocalPlayer.Character["Right Arm"].CFrame;
+			flashlightpoint.WorldPosition = l__CFrame__257.Position + l__CFrame__257.UpVector * -1;
+			flashlightpoint.Orientation = Vector3.new(-90, 0, 0);
+		end;
+		game.ReplicatedStorage.Events.ServerInput:FireServer("ShowFlashlightN9\226\153\1668\226\151\1397\226\151\1529\226\128\16289789\226\128\1629", { true, l__UserInputService__1.VREnabled });
+	elseif assetloaded then
+		flashlightpoint.Parent = nil;
+		game.ReplicatedStorage.Events.ServerInput:FireServer("ShowFlashlightN9\226\153\1668\226\151\1397\226\151\1529\226\128\16289789\226\128\1629", { false, l__UserInputService__1.VREnabled });
+	end;
+	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid") then
+		local v258 = nil;
+		local v259 = nil;
+		local v260 = nil;
+		local v261 = nil;
+		local v262 = nil;
+		local v263 = nil;
+		local v264 = nil;
+		if outdoors then
+			if v186 == "Default" then
+				if v181.Parent ~= workspace then
+					v181.Parent = game.Workspace;
+				end;
+				v181.CFrame = c.CFrame + c.CFrame.UpVector * -0.5;
+				return;
+			end;
+			v258 = v181;
+			v259 = "Parent";
+			v260 = v258;
+			v261 = v259;
+			v262 = v260[v261];
+			local v265 = nil;
+			v263 = v262;
+			v264 = v265;
+			if v263 ~= v264 then
+				v181.Parent = nil;
+			end;
+		else
+			v258 = v181;
+			v259 = "Parent";
+			v260 = v258;
+			v261 = v259;
+			v262 = v260[v261];
+			v265 = nil;
+			v263 = v262;
+			v264 = v265;
+			if v263 ~= v264 then
+				v181.Parent = nil;
+			end;
+		end;
+	end;
+end);
